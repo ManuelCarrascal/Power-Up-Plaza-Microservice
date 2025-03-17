@@ -1,6 +1,8 @@
 package com.pragma.powerup.domain.utils.constants;
 
 public class UserValidatorConstants {
+    private UserValidatorConstants() {}
+
     public static final String NAME_IS_REQUIRED = "Name is required";
     public static final String NAME_REGEX_MESSAGE = "Name cannot contain only numeric characters";
     public static final String NIT_IS_REQUIRED = "Nit is required";
