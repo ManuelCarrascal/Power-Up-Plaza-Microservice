@@ -39,6 +39,6 @@ public class BeanConfiguration {
 
     @Bean
     public IRestaurantServicePort restaurantServicePort() {
-        return new RestaurantUseCase(restaurantPersistencePort(), restaurantValidator(), userPersistencePort());
+        return new RestaurantUseCase(restaurantPersistencePort(), restaurantValidator());
     }
 }
