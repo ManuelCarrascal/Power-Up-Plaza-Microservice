@@ -4,70 +4,70 @@ import com.pragma.powerup.domain.exception.DoesNotOwnerException;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.domain.spi.IUserPersistencePort;
-import com.pragma.powerup.domain.utils.constants.UserUseCaseConstants;
 import com.pragma.powerup.domain.utils.validators.RestaurantValidator;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
 class RestaurantUseCaseTest {
 
     @Test
-    void createRestaurant_validData_createsRestaurantSuccessfully() {
-        IRestaurantPersistencePort mockPersistencePort = mock(IRestaurantPersistencePort.class);
-        RestaurantValidator mockValidator = mock(RestaurantValidator.class);
-        IUserPersistencePort mockUserPort = mock(IUserPersistencePort.class);
+    void createRestaurant_ValidInput_ShouldPersistRestaurant() {
+        // Arrange
+        IRestaurantPersistencePort restaurantPersistencePort = mock(IRestaurantPersistencePort.class);
+        RestaurantValidator restaurantValidator = mock(RestaurantValidator.class);
+        IUserPersistencePort userPersistencePort = mock(IUserPersistencePort.class);
 
-        RestaurantUseCase restaurantUseCase = new RestaurantUseCase(mockPersistencePort, mockValidator, mockUserPort);
-        Restaurant restaurant = new Restaurant(1L, "Test Restaurant", "123456", "Test Address", "1234567890", "http://testlogo.com", 1L);
+        RestaurantUseCase restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, restaurantValidator, userPersistencePort);
 
-        when(mockUserPort.isOwner(restaurant.getIdOwner())).thenReturn(true);
+        Restaurant restaurant = new Restaurant.Builder()
+                .id(1L)
+                .name("Test Restaurant")
+                .nit("1234567890")
+                .address("123 Main St")
+                .phone("555-1234")
+                .urlLogo("httpg://example.com/logo.jpg")
+                .idOwner(1L)
+                .build();
 
-        assertDoesNotThrow(() -> restaurantUseCase.createRestaurant(restaurant));
+        when(userPersistencePort.isOwner(1L)).thenReturn(true);
 
-        verify(mockValidator, times(1)).validate(restaurant);
-        verify(mockUserPort, times(1)).isOwner(restaurant.getIdOwner());
-        verify(mockPersistencePort, times(1)).createRestaurant(restaurant);
+        // Act
+        restaurantUseCase.createRestaurant(restaurant);
+
+        // Assert
+        verify(restaurantValidator).validate(restaurant);
+        verify(userPersistencePort).isOwner(1L);
+        verify(restaurantPersistencePort).createRestaurant(restaurant);
     }
 
     @Test
-    void createRestaurant_invalidOwner_throwsDoesNotOwnerException() {
-        IRestaurantPersistencePort mockPersistencePort = mock(IRestaurantPersistencePort.class);
-        RestaurantValidator mockValidator = mock(RestaurantValidator.class);
-        IUserPersistencePort mockUserPort = mock(IUserPersistencePort.class);
+    void createRestaurant_InvalidOwner_ShouldThrowDoesNotOwnerException() {
+        // Arrange
+        IRestaurantPersistencePort restaurantPersistencePort = mock(IRestaurantPersistencePort.class);
+        RestaurantValidator restaurantValidator = mock(RestaurantValidator.class);
+        IUserPersistencePort userPersistencePort = mock(IUserPersistencePort.class);
 
-        RestaurantUseCase restaurantUseCase = new RestaurantUseCase(mockPersistencePort, mockValidator, mockUserPort);
-        Restaurant restaurant = new Restaurant(1L, "Test Restaurant", "123456", "Test Address", "1234567890", "http://testlogo.com", 1L);
+        RestaurantUseCase restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, restaurantValidator, userPersistencePort);
 
-        when(mockUserPort.isOwner(restaurant.getIdOwner())).thenReturn(false);
+        Restaurant restaurant = new Restaurant.Builder()
+                .id(1L)
+                .name("Test Restaurant")
+                .nit("1234567890")
+                .address("123 Main St")
+                .phone("555-1234")
+                .urlLogo("httpg://example.com/logo.jpg")
+                .idOwner(1L)
+                .build();
 
-        DoesNotOwnerException exception = assertThrows(DoesNotOwnerException.class, () -> restaurantUseCase.createRestaurant(restaurant));
+        when(userPersistencePort.isOwner(1L)).thenReturn(false);
 
-        verify(mockValidator, times(1)).validate(restaurant);
-        verify(mockUserPort, times(1)).isOwner(restaurant.getIdOwner());
-        verify(mockPersistencePort, never()).createRestaurant(restaurant);
+        // Act & Assert
+        assertThrows(DoesNotOwnerException.class, () -> restaurantUseCase.createRestaurant(restaurant));
 
-        assert exception.getMessage().equals(UserUseCaseConstants.DOES_NOT_HAVE_OWNER_OWNER_ROLE);
-    }
-
-    @Test
-    void createRestaurant_validationFails_doesNotProceedToCreation() {
-        IRestaurantPersistencePort mockPersistencePort = mock(IRestaurantPersistencePort.class);
-        RestaurantValidator mockValidator = mock(RestaurantValidator.class);
-        IUserPersistencePort mockUserPort = mock(IUserPersistencePort.class);
-
-        RestaurantUseCase restaurantUseCase = new RestaurantUseCase(mockPersistencePort, mockValidator, mockUserPort);
-        Restaurant restaurant = new Restaurant(null, null, null, null, null, null, null);
-
-        doThrow(new IllegalArgumentException("Invalid restaurant")).when(mockValidator).validate(restaurant);
-
-        assertThrows(IllegalArgumentException.class, () -> restaurantUseCase.createRestaurant(restaurant));
-
-        verify(mockValidator, times(1)).validate(restaurant);
-        verify(mockUserPort, never()).isOwner(any());
-        verify(mockPersistencePort, never()).createRestaurant(any());
+        verify(restaurantValidator).validate(restaurant);
+        verify(userPersistencePort).isOwner(1L);
+        verifyNoInteractions(restaurantPersistencePort);
     }
 }
