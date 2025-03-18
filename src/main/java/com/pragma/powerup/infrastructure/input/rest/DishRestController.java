@@ -36,6 +36,17 @@ public class DishRestController {
     }
 
     @PatchMapping("/{id}")
+    @Operation(
+            summary = OpenApiDishRestControllerConstants.UPDATE_DISH_SUMMARY,
+            description = OpenApiDishRestControllerConstants.UPDATE_DISH_DESCRIPTION
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_OK, description = OpenApiDishRestControllerConstants.RESPONSE_200_DESCRIPTION),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_BAD_REQUEST, description = OpenApiDishRestControllerConstants.RESPONSE_400_DESCRIPTION),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_NOT_FOUND, description = OpenApiDishRestControllerConstants.RESPONSE_404_DESCRIPTION),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_INTERNAL_SERVER_ERROR, description = OpenApiDishRestControllerConstants.RESPONSE_500_DESCRIPTION)
+    })
+
     public void updateDish(@PathVariable Long id, @Valid @RequestBody DishUpdateRequestDto dishUpdateRequestDto) {
         dishHandler.updateDish(id, dishUpdateRequestDto);
     }

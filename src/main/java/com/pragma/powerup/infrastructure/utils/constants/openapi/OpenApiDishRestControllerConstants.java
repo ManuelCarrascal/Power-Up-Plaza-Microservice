@@ -11,5 +11,11 @@ public class OpenApiDishRestControllerConstants {
 
     public static final String RESPONSE_200_DESCRIPTION = "Dish successfully created";
     public static final String RESPONSE_400_DESCRIPTION = "Invalid request parameters";
+    public static final String RESPONSE_404_DESCRIPTION = "Dish not found for the provided ID.";
     public static final String RESPONSE_500_DESCRIPTION = "Internal server error";
+
+    public static final String UPDATE_DISH_SUMMARY = "Update an existing dish";
+    public static final String UPDATE_DISH_DESCRIPTION = "Endpoint to update the price or description of a dish.";
+
+
 }

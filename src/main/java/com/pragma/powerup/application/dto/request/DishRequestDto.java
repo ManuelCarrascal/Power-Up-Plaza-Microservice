@@ -25,7 +25,11 @@ public class DishRequestDto {
             required = true)
     @NotNull(message = DishRequestDtoConstants.PRICE_IS_MANDATORY)
     @Positive(message = DishRequestDtoConstants.PRICE_MUST_BE_POSITIVE)
-    @Digits(integer = 10, fraction = 0, message = "The price must be an integer")
+    @Digits(
+            integer = DishRequestDtoConstants.PRICE_INTEGER_PART,
+            fraction = DishRequestDtoConstants.PRICE_FRACTION_PART,
+            message = DishRequestDtoConstants.PRICE_MUST_BE_INTEGER
+    )
     private double price;
 
     @Schema(description = OpenApiDishRequestDtoConstants.DESCRIPTION_DESCRIPTION,
