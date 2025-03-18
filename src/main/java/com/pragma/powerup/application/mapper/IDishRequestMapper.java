@@ -18,7 +18,6 @@ public interface IDishRequestMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "idRestaurant", source = "dishRequestDto.idRestaurant")
     @Mapping(target = "categories", expression = "java(categoriesToList(dishRequestDto.getCategories()))")
-    @Mapping(target = "active", ignore = true)
     Dish toDish(DishRequestDto dishRequestDto);
 
     default List<Category> categoriesToList(List<String> categoryNames) {
@@ -31,4 +30,6 @@ public interface IDishRequestMapper {
                 })
                 .collect(Collectors.toList());
     }
+
+
 }
