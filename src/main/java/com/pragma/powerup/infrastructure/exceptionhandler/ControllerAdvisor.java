@@ -1,5 +1,6 @@
 package com.pragma.powerup.infrastructure.exceptionhandler;
 
+import com.pragma.powerup.domain.exception.CustomValidationException;
 import com.pragma.powerup.domain.exception.DoesNotOwnerException;
 import com.pragma.powerup.infrastructure.exception.NoDataFoundException;
 import com.pragma.powerup.infrastructure.utils.constants.ControllerAdvisorConstants;
@@ -30,6 +31,17 @@ public class ControllerAdvisor {
         ErrorResponse errorResponse = new ErrorResponse(
                 HttpStatus.BAD_REQUEST.value(),
                 errors.toString(),
+                request.getRequestURI()
+        );
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
+    }
+
+    @ExceptionHandler(CustomValidationException.class)
+    public ResponseEntity<ErrorResponse> handleCustomValidationException(CustomValidationException ex, HttpServletRequest request) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                HttpStatus.BAD_REQUEST.value(),
+                ex.getMessage(),
                 request.getRequestURI()
         );
 
