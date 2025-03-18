@@ -5,7 +5,7 @@ import java.util.List;
 public class Dish {
     private Long id;
     private String name;
-    private double price;
+    private Double price;
     private String description;
     private String urlImage;
     private String category;
@@ -30,13 +30,14 @@ public class Dish {
         this.name = name;
     }
 
-    public double getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
+
 
     public String getDescription() {
         return description;

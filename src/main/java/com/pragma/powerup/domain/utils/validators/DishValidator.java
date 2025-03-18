@@ -19,6 +19,15 @@ public class DishValidator {
         ensureActiveDefault(dish.isActive());
     }
 
+    public void validateUpdate(Dish dish) {
+        if (dish.getPrice() != null) {
+            validPrice(dish.getPrice());
+        }
+        if (dish.getDescription() != null && !dish.getDescription().isEmpty()) {
+            validDescription(dish.getDescription());
+        }
+    }
+
     private void validName(String name) {
         if (name == null || name.isEmpty()) {
             throw new CustomValidationException(DishValidatorConstants.NAME_REQUIRED);
@@ -69,4 +78,6 @@ public class DishValidator {
             throw new CustomValidationException(DishValidatorConstants.ACTIVE_MUST_BE_TRUE);
         }
     }
+
+
 }

@@ -6,10 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Positive;
+import javax.validation.constraints.*;
 import java.util.List;
 
 @Getter
@@ -28,6 +25,7 @@ public class DishRequestDto {
             required = true)
     @NotNull(message = DishRequestDtoConstants.PRICE_IS_MANDATORY)
     @Positive(message = DishRequestDtoConstants.PRICE_MUST_BE_POSITIVE)
+    @Digits(integer = 10, fraction = 0, message = "The price must be an integer")
     private double price;
 
     @Schema(description = OpenApiDishRequestDtoConstants.DESCRIPTION_DESCRIPTION,
