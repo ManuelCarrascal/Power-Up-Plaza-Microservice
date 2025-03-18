@@ -16,11 +16,11 @@ public interface IDishEntityMapper {
 
     @Mapping(target = "restaurant", source = "idRestaurant", qualifiedByName = "idToRestaurant")
     @Mapping(target = "categories", source = "categories")
-    @Mapping(target = "price", expression = "java((int) dish.getPrice())")
+    @Mapping(target = "price", expression = "java(dish.getPrice() != null ? dish.getPrice().intValue() : null)") // Double -> Integer
     DishEntity toEntity(Dish dish);
 
     @Mapping(target = "idRestaurant", source = "restaurant.id")
-    @Mapping(target = "price", expression = "java((double) dishEntity.getPrice())")
+    @Mapping(target = "price", expression = "java(dishEntity.getPrice() != null ? dishEntity.getPrice().doubleValue() : null)") // Integer -> Double
     Dish toDomain(DishEntity dishEntity);
 
     @Named("idToRestaurant")
@@ -33,5 +33,4 @@ public interface IDishEntityMapper {
         return restaurant;
     }
 }
-
 
