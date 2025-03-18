@@ -7,6 +7,7 @@ import com.pragma.powerup.infrastructure.utils.constants.openapi.ResponseCodes;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +20,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/dishes")
 @RequiredArgsConstructor
+@Tag( name = OpenApiDishRestControllerConstants.CONTROLLER_TAG , description = OpenApiDishRestControllerConstants.CONTROLLER_DESCRIPTION)
 public class DishRestController {
 
     private final IDishHandler dishHandler;
