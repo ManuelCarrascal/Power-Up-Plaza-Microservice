@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -28,4 +29,8 @@ public class RestaurantEntity {
 
     @OneToMany(mappedBy = RestaurantEntityConstants.RESTAURANT_MAPPED_BY, fetch = FetchType.LAZY)
     private List<DishEntity> dishes;
+
+    @OneToMany(mappedBy = "restaurant", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private List<EmployeeEntity> employees = new ArrayList<>();
+
 }

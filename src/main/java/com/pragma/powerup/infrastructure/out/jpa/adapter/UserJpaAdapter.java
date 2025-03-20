@@ -8,7 +8,6 @@ import lombok.RequiredArgsConstructor;
 public class UserJpaAdapter implements IUserPersistencePort {
 
     private final IUserFeignClient userFeignClient;
-
     @Override
     public boolean isOwner(Long ownerId) {
         return  userFeignClient.findOwnerById(ownerId);
