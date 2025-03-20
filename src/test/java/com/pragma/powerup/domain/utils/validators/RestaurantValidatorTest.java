@@ -1,7 +1,6 @@
 package com.pragma.powerup.domain.utils.validators;
 
 import com.pragma.powerup.domain.exception.CustomValidationException;
-import com.pragma.powerup.domain.exception.DoesNotOwnerException;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.utils.constants.UserValidatorConstants;
 import org.junit.jupiter.api.Test;

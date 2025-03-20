@@ -12,10 +12,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -41,4 +40,20 @@ public class RestaurantRestController {
     public void createRestaurant(@Valid @RequestBody RestaurantRequestDto restaurantRequestDto) {
          restaurantHandler.createRestaurant(restaurantRequestDto);
     }
+
+
+    @PostMapping("/create-employee")
+    public ResponseEntity<Object> createEmployee(@RequestParam Long userId, @RequestParam Long restaurantId) {
+        restaurantHandler.createEmployee(userId, restaurantId);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping("/is-owner")
+    public ResponseEntity<Boolean> isOwnerOfRestaurant(@RequestParam Long ownerId, @RequestParam Long restaurantId) {
+        boolean isOwner = restaurantHandler.isOwnerOfRestaurant(ownerId, restaurantId);
+        return ResponseEntity.ok(isOwner);
+    }
+
+
+
 }

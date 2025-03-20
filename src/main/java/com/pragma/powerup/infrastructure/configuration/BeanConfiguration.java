@@ -20,6 +20,7 @@ import com.pragma.powerup.infrastructure.out.jpa.mapper.IDishEntityMapper;
 import com.pragma.powerup.infrastructure.out.jpa.mapper.IRestaurantEntityMapper;
 import com.pragma.powerup.infrastructure.out.jpa.repository.ICategoryRepository;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IDishRepository;
+import com.pragma.powerup.infrastructure.out.jpa.repository.IEmployeeRepository;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IRestaurantRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -35,6 +36,7 @@ public class BeanConfiguration {
     private final IDishEntityMapper dishEntityMapper;
     private final ICategoryRepository categoryRepository;
     private final ICategoryEntityMapper categoryEntityMapper;
+    private final IEmployeeRepository employeeRepository;
     private final IUserFeignClient userFeignClient;
 
 
@@ -60,7 +62,7 @@ public class BeanConfiguration {
 
     @Bean
     public IRestaurantPersistencePort restaurantPersistencePort() {
-        return new RestaurantJpaAdapter( restaurantRepository,restaurantEntityMapper);
+        return new RestaurantJpaAdapter( restaurantRepository,employeeRepository,restaurantEntityMapper);
     }
 
     @Bean
