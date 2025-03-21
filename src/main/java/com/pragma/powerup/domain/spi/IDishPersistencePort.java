@@ -7,4 +7,5 @@ public interface IDishPersistencePort {
     void createDish(Dish dish);
     Dish findDishById(Long id);
     void updateDish(Dish dish);
+    void changeDishStatus(Dish dish, Long idOwner);
 }

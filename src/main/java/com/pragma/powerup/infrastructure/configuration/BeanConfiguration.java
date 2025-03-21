@@ -10,7 +10,7 @@ import com.pragma.powerup.domain.usecase.DishUseCase;
 import com.pragma.powerup.domain.usecase.RestaurantUseCase;
 import com.pragma.powerup.domain.utils.validators.DishValidator;
 import com.pragma.powerup.domain.utils.validators.RestaurantValidator;
-import com.pragma.powerup.infrastructure.feign.IUserFeignClient;
+import com.pragma.powerup.infrastructure.out.feign.IUserFeignClient;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.CategoryJpaAdapter;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.DishJpaAdapter;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.RestaurantJpaAdapter;
@@ -39,7 +39,6 @@ public class BeanConfiguration {
     private final IEmployeeRepository employeeRepository;
     private final IUserFeignClient userFeignClient;
 
-
     @Bean
     public DishValidator dishValidator() {
         return new DishValidator();
@@ -47,8 +46,9 @@ public class BeanConfiguration {
 
     @Bean
     public IDishServicePort dishServicePort() {
-        return new DishUseCase(dishPersistencePort(),categoryPersistencePort(),dishValidator());
+        return new DishUseCase(dishPersistencePort(), categoryPersistencePort(), dishValidator(), restaurantPersistencePort(), userPersistencePort());
     }
+
 
     @Bean
     public ICategoryPersistencePort categoryPersistencePort() {
@@ -62,14 +62,13 @@ public class BeanConfiguration {
 
     @Bean
     public IRestaurantPersistencePort restaurantPersistencePort() {
-        return new RestaurantJpaAdapter( restaurantRepository,employeeRepository,restaurantEntityMapper);
+        return new RestaurantJpaAdapter(restaurantRepository, employeeRepository, restaurantEntityMapper);
     }
 
     @Bean
     public RestaurantValidator restaurantValidator() {
         return new RestaurantValidator();
     }
-
 
     @Bean
     public IRestaurantServicePort restaurantServicePort() {
@@ -78,9 +77,6 @@ public class BeanConfiguration {
 
     @Bean
     public IDishPersistencePort dishPersistencePort() {
-        return new DishJpaAdapter(dishRepository,dishEntityMapper);
+        return new DishJpaAdapter(dishRepository, dishEntityMapper);
     }
-
-
-
 }

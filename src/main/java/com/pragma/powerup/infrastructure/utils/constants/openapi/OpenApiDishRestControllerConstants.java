@@ -17,5 +17,7 @@ public class OpenApiDishRestControllerConstants {
     public static final String UPDATE_DISH_SUMMARY = "Update an existing dish";
     public static final String UPDATE_DISH_DESCRIPTION = "Endpoint to update the price or description of a dish.";
 
+    public static final String CHANGE_DISH_STATUS_SUMMARY = "Change dish status";
+    public static final String CHANGE_DISH_STATUS_DESCRIPTION = "Changes the active status of a dish. Only owners of the restaurant can change the status.";
 
 }
