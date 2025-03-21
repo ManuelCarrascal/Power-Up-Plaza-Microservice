@@ -57,7 +57,17 @@ public class DishRestController {
 
     @PatchMapping("/status")
     @PreAuthorize("hasRole('ROLE_OWNER')")
-    public void  changeDishStatus(@Valid @RequestBody DishStatusDto dishStatusDto) {
+    @Operation(
+            summary = OpenApiDishRestControllerConstants.CHANGE_DISH_STATUS_SUMMARY,
+            description = OpenApiDishRestControllerConstants.CHANGE_DISH_STATUS_DESCRIPTION
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_OK, description = OpenApiDishRestControllerConstants.RESPONSE_200_DESCRIPTION),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_BAD_REQUEST, description = OpenApiDishRestControllerConstants.RESPONSE_400_DESCRIPTION),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_NOT_FOUND, description = OpenApiDishRestControllerConstants.RESPONSE_404_DESCRIPTION),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_INTERNAL_SERVER_ERROR, description = OpenApiDishRestControllerConstants.RESPONSE_500_DESCRIPTION)
+    })
+    public void changeDishStatus(@Valid @RequestBody DishStatusDto dishStatusDto) {
         dishHandler.changeDishStatus(dishStatusDto);
     }
 
