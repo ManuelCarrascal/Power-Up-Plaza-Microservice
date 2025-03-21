@@ -9,7 +9,7 @@ import com.pragma.powerup.domain.spi.IUserPersistencePort;
 import com.pragma.powerup.domain.utils.validators.RestaurantValidator;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 class RestaurantUseCaseTest {
@@ -116,5 +116,41 @@ class RestaurantUseCaseTest {
         when(userPersistencePort.isOwner(2L)).thenReturn(false);
 
         assertThrows(UserIsNotOwnerOfRestaurantException.class, () -> restaurantUseCase.createEmployee(10L, 1L));
+    }
+
+    @Test
+    void isOwnerOfRestaurant_ShouldDelegateToRepository() {
+        IRestaurantPersistencePort restaurantPersistencePort = mock(IRestaurantPersistencePort.class);
+        IUserPersistencePort userPersistencePort = mock(IUserPersistencePort.class);
+
+        RestaurantUseCase restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, null, userPersistencePort);
+
+        Long userId = 1L;
+        Long restaurantId = 2L;
+
+        when(restaurantPersistencePort.isOwnerOfRestaurant(userId, restaurantId)).thenReturn(true);
+
+        boolean result = restaurantUseCase.isOwnerOfRestaurant(userId, restaurantId);
+
+        assertTrue(result);
+        verify(restaurantPersistencePort).isOwnerOfRestaurant(userId, restaurantId);
+    }
+
+    @Test
+    void isOwnerOfRestaurant_WhenNotOwner_ShouldReturnFalse() {
+        IRestaurantPersistencePort restaurantPersistencePort = mock(IRestaurantPersistencePort.class);
+        IUserPersistencePort userPersistencePort = mock(IUserPersistencePort.class);
+
+        RestaurantUseCase restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, null, userPersistencePort);
+
+        Long userId = 1L;
+        Long restaurantId = 2L;
+
+        when(restaurantPersistencePort.isOwnerOfRestaurant(userId, restaurantId)).thenReturn(false);
+
+        boolean result = restaurantUseCase.isOwnerOfRestaurant(userId, restaurantId);
+
+        assertFalse(result);
+        verify(restaurantPersistencePort).isOwnerOfRestaurant(userId, restaurantId);
     }
 }
