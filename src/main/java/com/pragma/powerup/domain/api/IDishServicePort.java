@@ -5,4 +5,5 @@ import com.pragma.powerup.domain.model.Dish;
 public interface IDishServicePort {
     void createDish(Dish dish);
     void updateDish(Long id, Dish dish);
+    void changeDishStatus(Long dishId, Boolean status);
 }

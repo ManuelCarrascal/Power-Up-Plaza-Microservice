@@ -1,7 +1,9 @@
 package com.pragma.powerup.infrastructure.out.jpa.adapter;
 
+import com.pragma.powerup.domain.exception.CustomValidationException;
 import com.pragma.powerup.domain.model.Dish;
 import com.pragma.powerup.domain.spi.IDishPersistencePort;
+import com.pragma.powerup.domain.utils.constants.DishUseCaseConstants;
 import com.pragma.powerup.infrastructure.out.jpa.entity.DishEntity;
 import com.pragma.powerup.infrastructure.out.jpa.mapper.IDishEntityMapper;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IDishRepository;
@@ -29,6 +31,12 @@ public class DishJpaAdapter implements IDishPersistencePort {
 
     @Override
     public void updateDish(Dish dish) {
+        DishEntity dishEntity = dishEntityMapper.toEntity(dish);
+        dishRepository.save(dishEntity);
+    }
+
+    @Override
+    public void changeDishStatus(Dish dish, Long idOwner) {
         DishEntity dishEntity = dishEntityMapper.toEntity(dish);
         dishRepository.save(dishEntity);
     }
