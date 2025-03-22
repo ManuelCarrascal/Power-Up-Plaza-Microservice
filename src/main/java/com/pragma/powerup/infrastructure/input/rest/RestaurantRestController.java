@@ -87,6 +87,7 @@ public class RestaurantRestController {
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
     public ResponseEntity<Pagination<RestaurantListResponseDto>> restaurantList(
             @Valid RestaurantListRequestDto restaurantListRequestDto) {
         Pagination<RestaurantListResponseDto> response = restaurantHandler.restaurantList(restaurantListRequestDto);
