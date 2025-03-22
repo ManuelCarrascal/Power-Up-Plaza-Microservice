@@ -1,9 +1,13 @@
 package com.pragma.powerup.application.handler.impl;
 
+import com.pragma.powerup.application.dto.request.RestaurantListRequestDto;
 import com.pragma.powerup.application.dto.request.RestaurantRequestDto;
+import com.pragma.powerup.application.dto.response.RestaurantListResponseDto;
 import com.pragma.powerup.application.handler.IRestaurantHandler;
+import com.pragma.powerup.application.mapper.IPaginationResponseMapper;
 import com.pragma.powerup.application.mapper.IRestaurantRequestMapper;
 import com.pragma.powerup.domain.api.IRestaurantServicePort;
+import com.pragma.powerup.domain.model.Pagination;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +17,7 @@ public class RestaurantHandler implements IRestaurantHandler {
 
     private final IRestaurantServicePort restaurantServicePort;
     private final IRestaurantRequestMapper restaurantRequestMapper;
+    private final IPaginationResponseMapper paginationResponseMapper;
 
     @Override
     public void createRestaurant(RestaurantRequestDto restaurantRequestDto) {
@@ -28,6 +33,11 @@ public class RestaurantHandler implements IRestaurantHandler {
     public boolean isOwnerOfRestaurant(Long userId, Long restaurantId) {
         return restaurantServicePort.isOwnerOfRestaurant(userId, restaurantId);
 
+    }
+
+    @Override
+    public Pagination<RestaurantListResponseDto> restaurantList(RestaurantListRequestDto restaurantListRequestDto) {
+        return paginationResponseMapper.toPaginationResponse(restaurantServicePort.restaurantList(restaurantListRequestDto));
     }
 
 }

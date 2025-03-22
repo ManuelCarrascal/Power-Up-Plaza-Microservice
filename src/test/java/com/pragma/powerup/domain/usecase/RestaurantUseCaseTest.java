@@ -1,13 +1,18 @@
 package com.pragma.powerup.domain.usecase;
 
+import com.pragma.powerup.application.dto.request.RestaurantListRequestDto;
 import com.pragma.powerup.domain.exception.DoesNotOwnerException;
 import com.pragma.powerup.domain.exception.RestaurantNotFoundException;
 import com.pragma.powerup.domain.exception.UserIsNotOwnerOfRestaurantException;
+import com.pragma.powerup.domain.model.Pagination;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.domain.spi.IUserPersistencePort;
+import com.pragma.powerup.domain.utils.constants.RestaurantUseCaseConstants;
 import com.pragma.powerup.domain.utils.validators.RestaurantValidator;
 import org.junit.jupiter.api.Test;
+
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -152,5 +157,101 @@ class RestaurantUseCaseTest {
 
         assertFalse(result);
         verify(restaurantPersistencePort).isOwnerOfRestaurant(userId, restaurantId);
+    }
+
+    @Test
+    void restaurantList_ValidInput_ShouldReturnPagination() {
+        IRestaurantPersistencePort restaurantPersistencePort = mock(IRestaurantPersistencePort.class);
+        RestaurantUseCase restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, null, null);
+
+        RestaurantListRequestDto requestDto = new RestaurantListRequestDto();
+        requestDto.setOrderDirection("ASC");
+        requestDto.setCurrentPage(0);
+        requestDto.setLimitForPage(10);
+
+        Pagination<Restaurant> expectedPagination = new Pagination<>(true, 0, 1, 5L, new ArrayList<>());
+
+        when(restaurantPersistencePort.listRestaurants("ASC", 0, 10)).thenReturn(expectedPagination);
+
+        Pagination<Restaurant> result = restaurantUseCase.restaurantList(requestDto);
+
+        assertEquals(expectedPagination, result);
+        verify(restaurantPersistencePort).listRestaurants("ASC", 0, 10);
+    }
+
+    @Test
+    void restaurantList_ValidDescendingOrder_ShouldReturnPagination() {
+        IRestaurantPersistencePort restaurantPersistencePort = mock(IRestaurantPersistencePort.class);
+        RestaurantUseCase restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, null, null);
+
+        RestaurantListRequestDto requestDto = new RestaurantListRequestDto();
+        requestDto.setOrderDirection("DESC");
+        requestDto.setCurrentPage(0);
+        requestDto.setLimitForPage(10);
+
+        Pagination<Restaurant> expectedPagination = new Pagination<>(false, 0, 1, 5L, new ArrayList<>());
+
+        when(restaurantPersistencePort.listRestaurants("DESC", 0, 10)).thenReturn(expectedPagination);
+
+        Pagination<Restaurant> result = restaurantUseCase.restaurantList(requestDto);
+
+        assertEquals(expectedPagination, result);
+        verify(restaurantPersistencePort).listRestaurants("DESC", 0, 10);
+    }
+
+    @Test
+    void restaurantList_InvalidOrderDirection_ShouldThrowIllegalArgumentException() {
+        IRestaurantPersistencePort restaurantPersistencePort = mock(IRestaurantPersistencePort.class);
+        RestaurantUseCase restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, null, null);
+
+        RestaurantListRequestDto requestDto = new RestaurantListRequestDto();
+        requestDto.setOrderDirection("INVALID");
+        requestDto.setCurrentPage(0);
+        requestDto.setLimitForPage(10);
+
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
+                () -> restaurantUseCase.restaurantList(requestDto));
+        assertEquals(RestaurantUseCaseConstants.INVALID_ORDER_DIRECTION_MESSAGE, exception.getMessage());
+        verifyNoInteractions(restaurantPersistencePort);
+    }
+
+    @Test
+    void validateAndNormalizeOrderDirection_LowercaseAsc_ShouldReturnUppercase() {
+        IRestaurantPersistencePort restaurantPersistencePort = mock(IRestaurantPersistencePort.class);
+        RestaurantUseCase restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, null, null);
+
+        RestaurantListRequestDto requestDto = new RestaurantListRequestDto();
+        requestDto.setOrderDirection("asc");
+        requestDto.setCurrentPage(0);
+        requestDto.setLimitForPage(10);
+
+        Pagination<Restaurant> expectedPagination = new Pagination<>(true, 0, 1, 5L, new ArrayList<>());
+
+        when(restaurantPersistencePort.listRestaurants("ASC", 0, 10)).thenReturn(expectedPagination);
+
+        Pagination<Restaurant> result = restaurantUseCase.restaurantList(requestDto);
+
+        assertEquals(expectedPagination, result);
+        verify(restaurantPersistencePort).listRestaurants("ASC", 0, 10);
+    }
+
+    @Test
+    void validateAndNormalizeOrderDirection_MixedCaseDesc_ShouldReturnUppercase() {
+        IRestaurantPersistencePort restaurantPersistencePort = mock(IRestaurantPersistencePort.class);
+        RestaurantUseCase restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, null, null);
+
+        RestaurantListRequestDto requestDto = new RestaurantListRequestDto();
+        requestDto.setOrderDirection("DeSc");
+        requestDto.setCurrentPage(0);
+        requestDto.setLimitForPage(10);
+
+        Pagination<Restaurant> expectedPagination = new Pagination<>(false, 0, 1, 5L, new ArrayList<>());
+
+        when(restaurantPersistencePort.listRestaurants("DESC", 0, 10)).thenReturn(expectedPagination);
+
+        Pagination<Restaurant> result = restaurantUseCase.restaurantList(requestDto);
+
+        assertEquals(expectedPagination, result);
+        verify(restaurantPersistencePort).listRestaurants("DESC", 0, 10);
     }
 }
