@@ -1,8 +1,10 @@
 package com.pragma.powerup.domain.usecase;
 
+import com.pragma.powerup.application.dto.request.DishListRequestDto;
 import com.pragma.powerup.domain.api.IDishServicePort;
 import com.pragma.powerup.domain.exception.CustomValidationException;
 import com.pragma.powerup.domain.model.Dish;
+import com.pragma.powerup.domain.model.Pagination;
 import com.pragma.powerup.domain.spi.ICategoryPersistencePort;
 import com.pragma.powerup.domain.spi.IDishPersistencePort;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
@@ -58,6 +60,27 @@ public class DishUseCase implements IDishServicePort {
         }
         existingDish.setActive(status);
         dishPersistencePort.changeDishStatus(existingDish, ownerId);
+    }
+
+    @Override
+    public Pagination<Dish> listDishes(DishListRequestDto criteria) {
+        validateOrderDirection(criteria.getOrderDirection());
+
+        return dishPersistencePort.listDishes(
+                criteria.getIdRestaurant(),
+                criteria.getIdCategory(),
+                criteria.getActive(),
+                criteria.getOrderDirection().toUpperCase(),
+                criteria.getCurrentPage(),
+                criteria.getLimitForPage()
+        );
+    }
+
+    private void validateOrderDirection(String orderDirection) {
+        if (!orderDirection.equalsIgnoreCase("ASC") &&
+                !orderDirection.equalsIgnoreCase("DESC")) {
+            throw new IllegalArgumentException("Order direction must be ASC or DESC");
+        }
     }
 
     private void applyUpdates(Dish existingDish, Dish newDish) {
