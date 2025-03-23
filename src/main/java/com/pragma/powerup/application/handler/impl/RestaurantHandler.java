@@ -4,7 +4,7 @@ import com.pragma.powerup.application.dto.request.RestaurantListRequestDto;
 import com.pragma.powerup.application.dto.request.RestaurantRequestDto;
 import com.pragma.powerup.application.dto.response.RestaurantListResponseDto;
 import com.pragma.powerup.application.handler.IRestaurantHandler;
-import com.pragma.powerup.application.mapper.IPaginationResponseMapper;
+import com.pragma.powerup.application.mapper.IPaginationRestaurantResponseMapper;
 import com.pragma.powerup.application.mapper.IRestaurantRequestMapper;
 import com.pragma.powerup.domain.api.IRestaurantServicePort;
 import com.pragma.powerup.domain.model.Pagination;
@@ -17,7 +17,7 @@ public class RestaurantHandler implements IRestaurantHandler {
 
     private final IRestaurantServicePort restaurantServicePort;
     private final IRestaurantRequestMapper restaurantRequestMapper;
-    private final IPaginationResponseMapper paginationResponseMapper;
+    private final IPaginationRestaurantResponseMapper paginationResponseMapper;
 
     @Override
     public void createRestaurant(RestaurantRequestDto restaurantRequestDto) {
@@ -37,7 +37,12 @@ public class RestaurantHandler implements IRestaurantHandler {
 
     @Override
     public Pagination<RestaurantListResponseDto> restaurantList(RestaurantListRequestDto restaurantListRequestDto) {
-        return paginationResponseMapper.toPaginationResponse(restaurantServicePort.restaurantList(restaurantListRequestDto));
+        return paginationResponseMapper.toPaginationResponse(restaurantServicePort.restaurantList(
+                restaurantListRequestDto.getOrderDirection(),
+                restaurantListRequestDto.getCurrentPage(),
+                restaurantListRequestDto.getLimitForPage()
+                )
+        );
     }
 
 }

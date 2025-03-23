@@ -1,6 +1,5 @@
 package com.pragma.powerup.domain.usecase;
 
-import com.pragma.powerup.application.dto.request.RestaurantListRequestDto;
 import com.pragma.powerup.domain.api.IRestaurantServicePort;
 import com.pragma.powerup.domain.exception.DoesNotOwnerException;
 import com.pragma.powerup.domain.exception.RestaurantNotFoundException;
@@ -52,13 +51,12 @@ public class RestaurantUseCase implements IRestaurantServicePort {
     }
 
     @Override
-    public Pagination<Restaurant> restaurantList(RestaurantListRequestDto restaurantListRequestDto) {
-        String orderDirection = validateAndNormalizeOrderDirection(restaurantListRequestDto.getOrderDirection());
-
+    public Pagination<Restaurant> restaurantList(String orderDirection, Integer currentPage, Integer limitForPage) {
+        String normalizedDirection = validateAndNormalizeOrderDirection(orderDirection);
         return restaurantPersistencePort.listRestaurants(
-                orderDirection,
-                restaurantListRequestDto.getCurrentPage(),
-                restaurantListRequestDto.getLimitForPage()
+                normalizedDirection,
+                currentPage,
+                limitForPage
         );
     }
 
