@@ -3,10 +3,12 @@ package com.pragma.powerup.domain.usecase;
 import com.pragma.powerup.domain.exception.CustomValidationException;
 import com.pragma.powerup.domain.model.Category;
 import com.pragma.powerup.domain.model.Dish;
+import com.pragma.powerup.domain.model.Pagination;
 import com.pragma.powerup.domain.spi.ICategoryPersistencePort;
 import com.pragma.powerup.domain.spi.IDishPersistencePort;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
 import com.pragma.powerup.domain.spi.IUserPersistencePort;
+import com.pragma.powerup.domain.utils.constants.DishUseCaseConstants;
 import com.pragma.powerup.domain.utils.validators.DishValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -53,7 +55,7 @@ class DishUseCaseTest {
         dish.setName("Test Dish");
         dish.setPrice(10000.0);
         dish.setDescription("Test Description");
-        dish.setUrlImage("http://example.com/image.jpg");
+        dish.setUrlImage("httph://example.com/image.jpg");
         dish.setIdRestaurant(1L);
 
         List<Category> categories = new ArrayList<>();
@@ -147,5 +149,141 @@ class DishUseCaseTest {
 
         assertTrue(exception.getMessage().contains("not the owner"));
         verify(dishPersistencePort, never()).changeDishStatus(any(), anyLong());
+    }
+
+    @Test
+    void listDishes_WithValidParameters_ShouldReturnPagination() {
+        // Arrange
+        Long idRestaurant = 1L;
+        Long idCategory = 2L;
+        Boolean active = true;
+        String orderDirection = "ASC";
+        Integer currentPage = 0;
+        Integer limitForPage = 10;
+
+        List<Dish> dishes = new ArrayList<>();
+        dishes.add(dish);
+        Long totalElements = 1L;
+
+        Pagination<Dish> expectedPagination = new Pagination<>(
+                true,
+                currentPage,
+                limitForPage,
+                totalElements,
+                dishes
+        );
+
+        when(dishPersistencePort.listDishes(
+                idRestaurant,
+                idCategory,
+                active,
+                orderDirection,
+                currentPage,
+                limitForPage
+        )).thenReturn(expectedPagination);
+
+        // Act
+        Pagination<Dish> result = dishUseCase.listDishes(
+                idRestaurant,
+                idCategory,
+                active,
+                orderDirection,
+                currentPage,
+                limitForPage
+        );
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(expectedPagination, result);
+        verify(dishPersistencePort).listDishes(
+                idRestaurant,
+                idCategory,
+                active,
+                orderDirection,
+                currentPage,
+                limitForPage
+        );
+    }
+
+    @Test
+    void listDishes_WithInvalidOrderDirection_ShouldThrowException() {
+        // Arrange
+        Long idRestaurant = 1L;
+        Long idCategory = 2L;
+        Boolean active = true;
+        String invalidOrderDirection = "INVALID";
+        Integer currentPage = 0;
+        Integer limitForPage = 10;
+
+        // Act & Assert
+        Exception exception = assertThrows(IllegalArgumentException.class, () ->
+                dishUseCase.listDishes(
+                        idRestaurant,
+                        idCategory,
+                        active,
+                        invalidOrderDirection,
+                        currentPage,
+                        limitForPage
+                )
+        );
+
+        assertEquals(DishUseCaseConstants.INVALID_ORDER_DIRECTION, exception.getMessage());
+        verify(dishPersistencePort, never()).listDishes(
+                any(), any(), any(), any(), any(), any()
+        );
+    }
+
+    @Test
+    void listDishes_WithDescOrderDirection_ShouldReturnPagination() {
+        // Arrange
+        Long idRestaurant = 1L;
+        Long idCategory = 2L;
+        Boolean active = true;
+        String orderDirection = "DESC";
+        Integer currentPage = 0;
+        Integer limitForPage = 10;
+
+        List<Dish> dishes = new ArrayList<>();
+        dishes.add(dish);
+        Long totalElements = 1L;
+
+        Pagination<Dish> expectedPagination = new Pagination<>(
+                false, // ascending for DESC
+                currentPage,
+                limitForPage,
+                totalElements,
+                dishes
+        );
+
+        when(dishPersistencePort.listDishes(
+                idRestaurant,
+                idCategory,
+                active,
+                orderDirection,
+                currentPage,
+                limitForPage
+        )).thenReturn(expectedPagination);
+
+        // Act
+        Pagination<Dish> result = dishUseCase.listDishes(
+                idRestaurant,
+                idCategory,
+                active,
+                orderDirection,
+                currentPage,
+                limitForPage
+        );
+
+        // Assert
+        assertNotNull(result);
+        assertEquals(expectedPagination, result);
+        verify(dishPersistencePort).listDishes(
+                idRestaurant,
+                idCategory,
+                active,
+                orderDirection,
+                currentPage,
+                limitForPage
+        );
     }
 }
