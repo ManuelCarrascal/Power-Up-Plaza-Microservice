@@ -20,4 +20,8 @@ public class OpenApiDishRestControllerConstants {
     public static final String CHANGE_DISH_STATUS_SUMMARY = "Change dish status";
     public static final String CHANGE_DISH_STATUS_DESCRIPTION = "Changes the active status of a dish. Only owners of the restaurant can change the status.";
 
+    public static final String LIST_DISHES_SUMMARY = "List dishes";
+    public static final String LIST_DISHES_DESCRIPTION = "Get a paginated list of dishes with filtering options";
+    public static final String LIST_DISHES_200_DESCRIPTION = "Dishes list retrieved successfully";
+    public static final String LIST_DISHES_400_DESCRIPTION = "Bad request in dishes list parameters";
 }

@@ -1,8 +1,10 @@
 package com.pragma.powerup.domain.usecase;
 
+import com.pragma.powerup.application.dto.request.DishListRequestDto;
 import com.pragma.powerup.domain.api.IDishServicePort;
 import com.pragma.powerup.domain.exception.CustomValidationException;
 import com.pragma.powerup.domain.model.Dish;
+import com.pragma.powerup.domain.model.Pagination;
 import com.pragma.powerup.domain.spi.ICategoryPersistencePort;
 import com.pragma.powerup.domain.spi.IDishPersistencePort;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
@@ -54,10 +56,32 @@ public class DishUseCase implements IDishServicePort {
         }
         Long ownerId = userPersistencePort.getCurrentUserId();
         if (!restaurantPersistencePort.isOwnerOfRestaurant(ownerId, existingDish.getIdRestaurant())) {
-            throw new CustomValidationException("You are not the owner of this restaurant");
+            throw new CustomValidationException(DishUseCaseConstants.NOT_RESTAURANT_OWNER);
         }
         existingDish.setActive(status);
         dishPersistencePort.changeDishStatus(existingDish, ownerId);
+    }
+
+    @Override
+    public Pagination<Dish> listDishes(Long idRestaurant, Long idCategory, Boolean active,
+                                       String orderDirection, Integer currentPage, Integer limitForPage) {
+        validateOrderDirection(orderDirection);
+
+        return dishPersistencePort.listDishes(
+                idRestaurant,
+                idCategory,
+                active,
+                orderDirection,
+                currentPage,
+                limitForPage
+        );
+    }
+
+    private void validateOrderDirection(String orderDirection) {
+        if (!orderDirection.equalsIgnoreCase(DishUseCaseConstants.ORDER_DIRECTION_ASC) &&
+                !orderDirection.equalsIgnoreCase(DishUseCaseConstants.ORDER_DIRECTION_DESC)) {
+            throw new IllegalArgumentException(DishUseCaseConstants.INVALID_ORDER_DIRECTION);
+        }
     }
 
     private void applyUpdates(Dish existingDish, Dish newDish) {

@@ -9,7 +9,7 @@ import org.mapstruct.ReportingPolicy;
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
-public interface IPaginationResponseMapper {
+public interface IPaginationRestaurantResponseMapper {
     Pagination<RestaurantListResponseDto> toPaginationResponse(Pagination<Restaurant> pagination);
 
 }

@@ -1,5 +1,6 @@
 package com.pragma.powerup.infrastructure.configuration;
 
+import com.pragma.powerup.application.mapper.IPaginationDishResponseMapper;
 import com.pragma.powerup.domain.api.IDishServicePort;
 import com.pragma.powerup.domain.api.IRestaurantServicePort;
 import com.pragma.powerup.domain.spi.ICategoryPersistencePort;
@@ -23,6 +24,7 @@ import com.pragma.powerup.infrastructure.out.jpa.repository.IDishRepository;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IEmployeeRepository;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IRestaurantRepository;
 import lombok.RequiredArgsConstructor;
+import org.mapstruct.factory.Mappers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -49,6 +51,11 @@ public class BeanConfiguration {
         return new DishUseCase(dishPersistencePort(), categoryPersistencePort(), dishValidator(), restaurantPersistencePort(), userPersistencePort());
     }
 
+
+    @Bean
+    public IPaginationDishResponseMapper paginationDishResponseMapper() {
+        return Mappers.getMapper(IPaginationDishResponseMapper.class);
+    }
 
     @Bean
     public ICategoryPersistencePort categoryPersistencePort() {

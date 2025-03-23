@@ -164,16 +164,15 @@ class RestaurantUseCaseTest {
         IRestaurantPersistencePort restaurantPersistencePort = mock(IRestaurantPersistencePort.class);
         RestaurantUseCase restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, null, null);
 
-        RestaurantListRequestDto requestDto = new RestaurantListRequestDto();
-        requestDto.setOrderDirection("ASC");
-        requestDto.setCurrentPage(0);
-        requestDto.setLimitForPage(10);
+        String orderDirection = "ASC";
+        Integer currentPage = 0;
+        Integer limitForPage = 10;
 
         Pagination<Restaurant> expectedPagination = new Pagination<>(true, 0, 1, 5L, new ArrayList<>());
 
         when(restaurantPersistencePort.listRestaurants("ASC", 0, 10)).thenReturn(expectedPagination);
 
-        Pagination<Restaurant> result = restaurantUseCase.restaurantList(requestDto);
+        Pagination<Restaurant> result = restaurantUseCase.restaurantList(orderDirection, currentPage, limitForPage);
 
         assertEquals(expectedPagination, result);
         verify(restaurantPersistencePort).listRestaurants("ASC", 0, 10);
@@ -184,16 +183,15 @@ class RestaurantUseCaseTest {
         IRestaurantPersistencePort restaurantPersistencePort = mock(IRestaurantPersistencePort.class);
         RestaurantUseCase restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, null, null);
 
-        RestaurantListRequestDto requestDto = new RestaurantListRequestDto();
-        requestDto.setOrderDirection("DESC");
-        requestDto.setCurrentPage(0);
-        requestDto.setLimitForPage(10);
+        String orderDirection = "DESC";
+        Integer currentPage = 0;
+        Integer limitForPage = 10;
 
         Pagination<Restaurant> expectedPagination = new Pagination<>(false, 0, 1, 5L, new ArrayList<>());
 
         when(restaurantPersistencePort.listRestaurants("DESC", 0, 10)).thenReturn(expectedPagination);
 
-        Pagination<Restaurant> result = restaurantUseCase.restaurantList(requestDto);
+        Pagination<Restaurant> result = restaurantUseCase.restaurantList(orderDirection, currentPage, limitForPage);
 
         assertEquals(expectedPagination, result);
         verify(restaurantPersistencePort).listRestaurants("DESC", 0, 10);
@@ -204,32 +202,31 @@ class RestaurantUseCaseTest {
         IRestaurantPersistencePort restaurantPersistencePort = mock(IRestaurantPersistencePort.class);
         RestaurantUseCase restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, null, null);
 
-        RestaurantListRequestDto requestDto = new RestaurantListRequestDto();
-        requestDto.setOrderDirection("INVALID");
-        requestDto.setCurrentPage(0);
-        requestDto.setLimitForPage(10);
+        String invalidOrderDirection = "INVALID";
+        Integer currentPage = 0;
+        Integer limitForPage = 10;
 
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class,
-                () -> restaurantUseCase.restaurantList(requestDto));
+                () -> restaurantUseCase.restaurantList(invalidOrderDirection, currentPage, limitForPage));
         assertEquals(RestaurantUseCaseConstants.INVALID_ORDER_DIRECTION_MESSAGE, exception.getMessage());
         verifyNoInteractions(restaurantPersistencePort);
     }
+
 
     @Test
     void validateAndNormalizeOrderDirection_LowercaseAsc_ShouldReturnUppercase() {
         IRestaurantPersistencePort restaurantPersistencePort = mock(IRestaurantPersistencePort.class);
         RestaurantUseCase restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, null, null);
 
-        RestaurantListRequestDto requestDto = new RestaurantListRequestDto();
-        requestDto.setOrderDirection("asc");
-        requestDto.setCurrentPage(0);
-        requestDto.setLimitForPage(10);
+        String orderDirection = "asc";
+        Integer currentPage = 0;
+        Integer limitForPage = 10;
 
         Pagination<Restaurant> expectedPagination = new Pagination<>(true, 0, 1, 5L, new ArrayList<>());
 
         when(restaurantPersistencePort.listRestaurants("ASC", 0, 10)).thenReturn(expectedPagination);
 
-        Pagination<Restaurant> result = restaurantUseCase.restaurantList(requestDto);
+        Pagination<Restaurant> result = restaurantUseCase.restaurantList(orderDirection, currentPage, limitForPage);
 
         assertEquals(expectedPagination, result);
         verify(restaurantPersistencePort).listRestaurants("ASC", 0, 10);
@@ -240,16 +237,15 @@ class RestaurantUseCaseTest {
         IRestaurantPersistencePort restaurantPersistencePort = mock(IRestaurantPersistencePort.class);
         RestaurantUseCase restaurantUseCase = new RestaurantUseCase(restaurantPersistencePort, null, null);
 
-        RestaurantListRequestDto requestDto = new RestaurantListRequestDto();
-        requestDto.setOrderDirection("DeSc");
-        requestDto.setCurrentPage(0);
-        requestDto.setLimitForPage(10);
+        String orderDirection = "DeSc";
+        Integer currentPage = 0;
+        Integer limitForPage = 10;
 
         Pagination<Restaurant> expectedPagination = new Pagination<>(false, 0, 1, 5L, new ArrayList<>());
 
         when(restaurantPersistencePort.listRestaurants("DESC", 0, 10)).thenReturn(expectedPagination);
 
-        Pagination<Restaurant> result = restaurantUseCase.restaurantList(requestDto);
+        Pagination<Restaurant> result = restaurantUseCase.restaurantList(orderDirection, currentPage, limitForPage);
 
         assertEquals(expectedPagination, result);
         verify(restaurantPersistencePort).listRestaurants("DESC", 0, 10);

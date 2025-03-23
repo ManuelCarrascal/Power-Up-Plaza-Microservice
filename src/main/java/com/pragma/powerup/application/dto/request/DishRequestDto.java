@@ -48,7 +48,7 @@ public class DishRequestDto {
             example = OpenApiDishRequestDtoConstants.CATEGORIES_EXAMPLE,
             required = true)
     @NotEmpty(message = DishRequestDtoConstants.CATEGORIES_ARE_MANDATORY)
-    private List<String> categories;
+        private List<String> categories;
 
     @Schema(description = OpenApiDishRequestDtoConstants.ID_RESTAURANT_DESCRIPTION,
             example = OpenApiDishRequestDtoConstants.ID_RESTAURANT_EXAMPLE,
