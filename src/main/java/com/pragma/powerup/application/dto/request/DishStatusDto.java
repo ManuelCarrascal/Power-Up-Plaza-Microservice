@@ -10,10 +10,7 @@ import javax.validation.constraints.Positive;
 
 @Getter
 @Setter
-@Schema(
-        name = OpenApiDishStatusDtoConstants.DTO_NAME,
-        description = OpenApiDishStatusDtoConstants.DTO_DESCRIPTION
-)
+@Schema(name = OpenApiDishStatusDtoConstants.DTO_NAME, description = OpenApiDishStatusDtoConstants.DTO_DESCRIPTION)
 public class DishStatusDto {
 
     @Schema(

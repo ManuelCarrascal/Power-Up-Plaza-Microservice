@@ -39,8 +39,17 @@ public class DishHandler implements IDishHandler {
     }
 
     @Override
-    public Pagination<DishListResponseDto> listDishes(DishListRequestDto dishListRequestDto) {
-        return paginationDishResponseMapper.toPaginationResponse(dishServicePort.listDishes(dishListRequestDto));
+    public Pagination<DishListResponseDto> listDishes(DishListRequestDto requestDto) {
+        return paginationDishResponseMapper.toPaginationResponse(
+                dishServicePort.listDishes(
+                        requestDto.getIdRestaurant(),
+                        requestDto.getIdCategory(),
+                        requestDto.getActive(),
+                        requestDto.getOrderDirection(),
+                        requestDto.getCurrentPage(),
+                        requestDto.getLimitForPage()
+                )
+        );
     }
 
 }

@@ -76,6 +76,19 @@ public class DishRestController {
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    @Operation(
+            summary = OpenApiDishRestControllerConstants.LIST_DISHES_SUMMARY,
+            description = OpenApiDishRestControllerConstants.LIST_DISHES_DESCRIPTION
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_OK,
+                    description = OpenApiDishRestControllerConstants.LIST_DISHES_200_DESCRIPTION),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_BAD_REQUEST,
+                    description = OpenApiDishRestControllerConstants.LIST_DISHES_400_DESCRIPTION),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_INTERNAL_SERVER_ERROR,
+                    description = OpenApiDishRestControllerConstants.RESPONSE_500_DESCRIPTION)
+    })
     public ResponseEntity<Pagination<DishListResponseDto>> dishesList(@Valid DishListRequestDto dishListRequestDto) {
         Pagination<DishListResponseDto> response = dishHandler.listDishes(dishListRequestDto);
         return ResponseEntity.ok(response);

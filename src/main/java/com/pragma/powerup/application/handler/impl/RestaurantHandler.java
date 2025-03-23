@@ -37,7 +37,12 @@ public class RestaurantHandler implements IRestaurantHandler {
 
     @Override
     public Pagination<RestaurantListResponseDto> restaurantList(RestaurantListRequestDto restaurantListRequestDto) {
-        return paginationResponseMapper.toPaginationResponse(restaurantServicePort.restaurantList(restaurantListRequestDto));
+        return paginationResponseMapper.toPaginationResponse(restaurantServicePort.restaurantList(
+                restaurantListRequestDto.getOrderDirection(),
+                restaurantListRequestDto.getCurrentPage(),
+                restaurantListRequestDto.getLimitForPage()
+                )
+        );
     }
 
 }
