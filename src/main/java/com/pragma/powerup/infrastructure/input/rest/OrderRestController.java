@@ -1,7 +1,10 @@
 package com.pragma.powerup.infrastructure.input.rest;
 
+import com.pragma.powerup.application.dto.request.OrderListRequestDto;
 import com.pragma.powerup.application.dto.request.OrderRequestDto;
+import com.pragma.powerup.application.dto.response.OrderListResponseDto;
 import com.pragma.powerup.application.handler.IOrderHandler;
+import com.pragma.powerup.domain.model.Pagination;
 import com.pragma.powerup.infrastructure.exceptionhandler.ErrorResponse;
 import com.pragma.powerup.infrastructure.utils.constants.openapi.OpenApiOrderRestController;
 import com.pragma.powerup.infrastructure.utils.constants.openapi.ResponseCodes;
@@ -15,10 +18,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -51,5 +51,10 @@ public class OrderRestController {
         orderHandler.saveOrder(orderRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(OpenApiOrderRestController.ORDER_CREATED_SUCCESSFULLY);
+    }
+
+    @GetMapping
+    public ResponseEntity<Pagination<OrderListResponseDto>> listOrders(@Valid OrderListRequestDto orderListRequestDto) {
+        return ResponseEntity.ok(orderHandler.orderList(orderListRequestDto));
     }
 }

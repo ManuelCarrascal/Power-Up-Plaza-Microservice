@@ -4,6 +4,7 @@ import com.pragma.powerup.domain.api.IOrderServicePort;
 import com.pragma.powerup.domain.exception.CustomValidationException;
 import com.pragma.powerup.domain.model.Order;
 import com.pragma.powerup.domain.model.OrderDish;
+import com.pragma.powerup.domain.model.Pagination;
 import com.pragma.powerup.domain.spi.IDishPersistencePort;
 import com.pragma.powerup.domain.spi.IOrderPersistencePort;
 import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
@@ -40,6 +41,22 @@ public class OrderUseCase implements IOrderServicePort {
         order.setDate(LocalDate.now());
 
         orderPersistencePort.createOrder(order);
+    }
+
+    @Override
+    public Pagination<Order> orderList(String orderDirection, Integer currentPage, Integer limitForPage, String status, Long restaurantId) {
+        Long employeeId = userPersistencePort.getCurrentUserId();
+        if (restaurantId == null || restaurantId <= OrderUseCaseConstants.MINIMUM_VALID_ID) {
+            throw new CustomValidationException(OrderUseCaseConstants.RESTAURANT_ID_INVALID);
+        }
+        if (restaurantPersistencePort.findById(restaurantId).isEmpty()) {
+            throw new CustomValidationException(OrderUseCaseConstants.RESTAURANT_NOT_FOUND);
+        }
+        if (!userPersistencePort.isEmployeeOfRestaurant(employeeId, restaurantId)) {
+            throw new CustomValidationException( "Employee does not work at this restaurant");
+        }
+
+        return orderPersistencePort.listOrders(orderDirection, currentPage, limitForPage, status, restaurantId);
     }
 
     private void validateClientHasNoActiveOrder(Long clientId) {
