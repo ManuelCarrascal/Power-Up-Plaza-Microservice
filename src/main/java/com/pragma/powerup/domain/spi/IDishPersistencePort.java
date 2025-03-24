@@ -15,4 +15,6 @@ public interface IDishPersistencePort {
 
     Pagination<Dish> listDishes(Long idRestaurant, Long categoryId, Boolean active,
                                 String orderDirection, Integer currentPage, Integer limitForPage);
+
+    Long getRestaurantIdByDishId(Long dishId);
 }
