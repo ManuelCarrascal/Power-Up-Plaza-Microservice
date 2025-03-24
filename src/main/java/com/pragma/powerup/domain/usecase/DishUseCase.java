@@ -1,6 +1,5 @@
 package com.pragma.powerup.domain.usecase;
 
-import com.pragma.powerup.application.dto.request.DishListRequestDto;
 import com.pragma.powerup.domain.api.IDishServicePort;
 import com.pragma.powerup.domain.exception.CustomValidationException;
 import com.pragma.powerup.domain.model.Dish;

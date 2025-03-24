@@ -1,6 +1,5 @@
 package com.pragma.powerup.domain.api;
 
-import com.pragma.powerup.application.dto.request.RestaurantListRequestDto;
 import com.pragma.powerup.domain.model.Pagination;
 import com.pragma.powerup.domain.model.Restaurant;
 
