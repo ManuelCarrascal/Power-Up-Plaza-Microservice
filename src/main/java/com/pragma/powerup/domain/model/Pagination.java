@@ -20,6 +20,9 @@ public class Pagination<T> {
         this.empty = content.isEmpty();
     }
 
+    public Pagination() {
+    }
+
     public List<T> getContent() {
         return content;
     }

@@ -15,4 +15,6 @@ public class OrderUseCaseConstants {
     public static final String DISH_ID_INVALID = "Dish id invalid";
     public static final String DISH_QUANTITY_INVALID = "Dish quantity must be greater than zero";
     public static final String DISH_RESTAURANT_MISMATCH = "Dish id mismatch";
+    public static final String EMPLOYEE_NOT_RESTAURANT_WORKER = "Employee does not work at this restaurant";
+
 }
