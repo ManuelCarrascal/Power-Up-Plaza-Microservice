@@ -18,4 +18,11 @@ public interface IOrderDishEntityMapper {
     OrderDishEntity toEntity(OrderDish orderDish);
 
     List<OrderDishEntity> toEntityList(List<OrderDish> orderDishes);
+
+    @Mapping(target = "dishId", source = "dish.id")
+    @Mapping(target = "name", source = "dish.name")
+    @Mapping(target = "price", source = "dish.price")
+    OrderDish toOrderDish(OrderDishEntity orderDishEntity);
+
+    List<OrderDish> toOrderDishList(List<OrderDishEntity> orderDishEntities);
 }

@@ -1,6 +1,7 @@
 package com.pragma.powerup.infrastructure.configuration;
 
 import com.pragma.powerup.application.mapper.IPaginationDishResponseMapper;
+import com.pragma.powerup.application.mapper.IPaginationOrderResponseMapper;
 import com.pragma.powerup.domain.api.IDishServicePort;
 import com.pragma.powerup.domain.api.IOrderServicePort;
 import com.pragma.powerup.domain.api.IRestaurantServicePort;
@@ -60,7 +61,6 @@ public class BeanConfiguration {
         );
     }
 
-
     @Bean
     public IPaginationDishResponseMapper paginationDishResponseMapper() {
         return Mappers.getMapper(IPaginationDishResponseMapper.class);
@@ -72,13 +72,18 @@ public class BeanConfiguration {
     }
 
     @Bean
+    public IPaginationOrderResponseMapper paginationOrderResponseMapper() {
+        return Mappers.getMapper(IPaginationOrderResponseMapper.class);
+    }
+
+    @Bean
     public ICategoryPersistencePort categoryPersistencePort() {
         return new CategoryJpaAdapter(categoryRepository, categoryEntityMapper);
     }
 
     @Bean
     public IUserPersistencePort userPersistencePort() {
-        return new UserJpaAdapter(userFeignClient);
+        return new UserJpaAdapter(userFeignClient, employeeRepository);
     }
 
     @Bean

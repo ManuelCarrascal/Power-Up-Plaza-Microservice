@@ -2,6 +2,7 @@ package com.pragma.powerup.infrastructure.out.jpa.adapter;
 
 import com.pragma.powerup.domain.spi.IUserPersistencePort;
 import com.pragma.powerup.infrastructure.out.feign.IUserFeignClient;
+import com.pragma.powerup.infrastructure.out.jpa.repository.IEmployeeRepository;
 import com.pragma.powerup.infrastructure.security.service.UserDetailImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -11,6 +12,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 public class UserJpaAdapter implements IUserPersistencePort {
 
     private final IUserFeignClient userFeignClient;
+    private final IEmployeeRepository employeeRepository;
 
     @Override
     public boolean isOwner(Long ownerId) {
@@ -22,6 +24,11 @@ public class UserJpaAdapter implements IUserPersistencePort {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         UserDetailImpl user = (UserDetailImpl) authentication.getPrincipal();
         return  user.getId();
+    }
+
+    @Override
+    public boolean isEmployeeOfRestaurant(Long employeeId, Long restaurantId) {
+        return employeeRepository.existsByUserIdAndRestaurantId(employeeId, restaurantId);
     }
 
 }
