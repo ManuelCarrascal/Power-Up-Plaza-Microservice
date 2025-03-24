@@ -9,6 +9,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -24,7 +25,7 @@ public interface IPaginationDishResponseMapper {
     @Named("categoriesToStrings")
     default List<String> categoriesToStrings(List<Category> categories) {
         if (categories == null) {
-            return null;
+            return Collections.emptyList();
         }
         return categories.stream()
                 .map(Category::getName)
