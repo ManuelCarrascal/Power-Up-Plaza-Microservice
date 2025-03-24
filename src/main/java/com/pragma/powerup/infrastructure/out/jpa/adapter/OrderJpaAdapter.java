@@ -1,7 +1,6 @@
 package com.pragma.powerup.infrastructure.out.jpa.adapter;
 
 import com.pragma.powerup.domain.model.Order;
-import com.pragma.powerup.domain.model.OrderDish;
 import com.pragma.powerup.domain.spi.IOrderPersistencePort;
 import com.pragma.powerup.infrastructure.out.jpa.entity.OrderDishEntity;
 import com.pragma.powerup.infrastructure.out.jpa.entity.OrderEntity;
@@ -10,11 +9,11 @@ import com.pragma.powerup.infrastructure.out.jpa.mapper.IOrderEntityMapper;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IDishRepository;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IOrderDishRepository;
 import com.pragma.powerup.infrastructure.out.jpa.repository.IOrderRepository;
+import com.pragma.powerup.infrastructure.utils.constants.OrderJpaAdapterConstants;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -46,7 +45,6 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
 
     @Override
     public boolean findOrderByClientId(Long clientId) {
-        List<String> inProgressStatuses = List.of("PENDING", "IN_PREPARATION", "READY");
-        return orderRepository.existsByClientIdAndStatusIn(clientId, inProgressStatuses);
+        return orderRepository.existsByClientIdAndStatusIn(clientId, OrderJpaAdapterConstants.IN_PROGRESS_STATUSES);
     }
 }
