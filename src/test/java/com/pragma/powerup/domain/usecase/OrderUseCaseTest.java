@@ -3,6 +3,7 @@ package com.pragma.powerup.domain.usecase;
 import com.pragma.powerup.domain.exception.CustomValidationException;
 import com.pragma.powerup.domain.model.Order;
 import com.pragma.powerup.domain.model.OrderDish;
+import com.pragma.powerup.domain.model.Pagination;
 import com.pragma.powerup.domain.model.Restaurant;
 import com.pragma.powerup.domain.spi.IDishPersistencePort;
 import com.pragma.powerup.domain.spi.IOrderPersistencePort;
@@ -249,5 +250,126 @@ class OrderUseCaseTest {
         );
         assertEquals(OrderUseCaseConstants.DISH_RESTAURANT_MISMATCH, exception.getMessage());
         verify(orderPersistencePort, never()).createOrder(any());
+    }
+
+    @Test
+    void orderList_Success_ReturnsOrdersWithDishes() {
+        Long employeeId = 1L;
+        Long restaurantId = 1L;
+        String status = "PENDING";
+        Integer currentPage = 0;
+        Integer limitForPage = 10;
+        String orderDirection = "ASC";
+
+        Order order1 = new Order();
+        order1.setId(1L);
+
+        List<Order> orders = new ArrayList<>();
+        orders.add(order1);
+
+        List<OrderDish> orderDishes = new ArrayList<>();
+        OrderDish dish = new OrderDish();
+        dish.setDishId(1L);
+        dish.setQuantity(2);
+        orderDishes.add(dish);
+
+        Pagination<Order> pagination = new Pagination<>();
+        pagination.setContent(orders);
+        pagination.setCurrentPage(0);
+        pagination.setTotalPages(1);
+        pagination.setTotalElements(1L);
+
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+        when(restaurantPersistencePort.findById(restaurantId)).thenReturn(Optional.of(restaurant));
+        when(userPersistencePort.isEmployeeOfRestaurant(employeeId, restaurantId)).thenReturn(true);
+        when(orderPersistencePort.listOrders(orderDirection, currentPage, limitForPage, status, restaurantId)).thenReturn(pagination);
+        when(orderPersistencePort.findDishesByOrderId(1L)).thenReturn(orderDishes);
+
+        Pagination<Order> result = orderUseCase.orderList(orderDirection, currentPage, limitForPage, status, restaurantId);
+
+        assertEquals(1, result.getContent().size());
+        assertEquals(1, result.getContent().get(0).getDishes().size());
+        verify(orderPersistencePort).listOrders(orderDirection, currentPage, limitForPage, status, restaurantId);
+        verify(orderPersistencePort).findDishesByOrderId(1L);
+    }
+    @Test
+    void orderList_NullRestaurantId_ThrowsException() {
+        Long employeeId = 1L;
+        Long restaurantId = null;
+        String status = "PENDING";
+        Integer currentPage = 0;
+        Integer limitForPage = 10;
+        String orderDirection = "ASC";
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.orderList(orderDirection, currentPage, limitForPage, status, restaurantId)
+        );
+        assertEquals(OrderUseCaseConstants.RESTAURANT_ID_INVALID, exception.getMessage());
+
+        verify(orderPersistencePort, never()).listOrders(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void orderList_InvalidRestaurantId_ThrowsException() {
+        Long employeeId = 1L;
+        Long restaurantId = 0L;
+        String status = "PENDING";
+        Integer currentPage = 0;
+        Integer limitForPage = 10;
+        String orderDirection = "ASC";
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.orderList(orderDirection, currentPage, limitForPage, status, restaurantId)
+        );
+        assertEquals(OrderUseCaseConstants.RESTAURANT_ID_INVALID, exception.getMessage());
+        verify(orderPersistencePort, never()).listOrders(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void orderList_RestaurantNotFound_ThrowsException() {
+        Long employeeId = 1L;
+        Long restaurantId = 1L;
+        String status = "PENDING";
+        Integer currentPage = 0;
+        Integer limitForPage = 10;
+        String orderDirection = "ASC";
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+        when(restaurantPersistencePort.findById(restaurantId)).thenReturn(Optional.empty());
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.orderList(orderDirection, currentPage, limitForPage, status, restaurantId)
+        );
+        assertEquals(OrderUseCaseConstants.RESTAURANT_NOT_FOUND, exception.getMessage());
+        verify(orderPersistencePort, never()).listOrders(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void orderList_EmployeeNotWorkingAtRestaurant_ThrowsException() {
+        Long employeeId = 1L;
+        Long restaurantId = 1L;
+        String status = "PENDING";
+        Integer currentPage = 0;
+        Integer limitForPage = 10;
+        String orderDirection = "ASC";
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+        when(restaurantPersistencePort.findById(restaurantId)).thenReturn(Optional.of(restaurant));
+        when(userPersistencePort.isEmployeeOfRestaurant(employeeId, restaurantId)).thenReturn(false);
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.orderList(orderDirection, currentPage, limitForPage, status, restaurantId)
+        );
+        assertEquals(OrderUseCaseConstants.EMPLOYEE_NOT_RESTAURANT_WORKER, exception.getMessage());
+        verify(orderPersistencePort, never()).listOrders(any(), any(), any(), any(), any());
     }
 }

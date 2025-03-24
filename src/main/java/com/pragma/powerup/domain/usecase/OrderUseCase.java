@@ -46,19 +46,14 @@ public class OrderUseCase implements IOrderServicePort {
     @Override
     public Pagination<Order> orderList(String orderDirection, Integer currentPage, Integer limitForPage, String status, Long restaurantId) {
         Long employeeId = userPersistencePort.getCurrentUserId();
-        if (restaurantId == null || restaurantId <= OrderUseCaseConstants.MINIMUM_VALID_ID) {
-            throw new CustomValidationException(OrderUseCaseConstants.RESTAURANT_ID_INVALID);
-        }
-        if (restaurantPersistencePort.findById(restaurantId).isEmpty()) {
-            throw new CustomValidationException(OrderUseCaseConstants.RESTAURANT_NOT_FOUND);
-        }
+
+        validateRestaurant(restaurantId);
+
         if (!userPersistencePort.isEmployeeOfRestaurant(employeeId, restaurantId)) {
-            throw new CustomValidationException( "Employee does not work at this restaurant");
+            throw new CustomValidationException(OrderUseCaseConstants.EMPLOYEE_NOT_RESTAURANT_WORKER);
         }
-        // Obtener órdenes paginadas
         Pagination<Order> orderPagination = orderPersistencePort.listOrders(orderDirection, currentPage, limitForPage, status, restaurantId);
 
-        // Obtener y setear platos para cada orden
         List<Order> orders = orderPagination.getContent();
         for (Order order : orders) {
             List<OrderDish> orderDishes = orderPersistencePort.findDishesByOrderId(order.getId());
