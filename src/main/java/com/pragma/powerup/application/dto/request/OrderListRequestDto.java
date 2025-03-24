@@ -1,29 +1,44 @@
 package com.pragma.powerup.application.dto.request;
 
+import com.pragma.powerup.application.utils.constants.OrderListRequestDtoConstants;
+import com.pragma.powerup.application.utils.constants.openapi.OpenApiOrderListRequestDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import javax.validation.constraints.NotNull;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "Request DTO for listing orders with pagination")
+@Schema(name = OpenApiOrderListRequestDto.DTO_NAME,
+        description = OpenApiOrderListRequestDto.DTO_DESCRIPTION)
 public class OrderListRequestDto {
-    @Schema(description = "Sort direction (ASC or DESC)", example = "ASC", defaultValue = "ASC")
-    private String orderDirection = "ASC";
+    @Schema(description = OpenApiOrderListRequestDto.ORDER_DIRECTION_DESCRIPTION,
+            example = OpenApiOrderListRequestDto.ORDER_DIRECTION_EXAMPLE,
+            defaultValue = OpenApiOrderListRequestDto.ORDER_DIRECTION_DEFAULT)
+    private String orderDirection = OpenApiOrderListRequestDto.ORDER_DIRECTION_DEFAULT;
 
-    @Schema(description = "Current page number", example = "0", defaultValue = "0")
-    private Integer currentPage = 0;
+    @Schema(description = OpenApiOrderListRequestDto.CURRENT_PAGE_DESCRIPTION,
+            example = OpenApiOrderListRequestDto.CURRENT_PAGE_EXAMPLE,
+            defaultValue = OpenApiOrderListRequestDto.CURRENT_PAGE_DEFAULT)
+    private Integer currentPage = OrderListRequestDtoConstants.CURRENT_PAGE_DEFAULT;
 
-    @Schema(description = "Number of items per page", example = "10", defaultValue = "10")
-    private Integer limitForPage = 10;
+    @Schema(description = OpenApiOrderListRequestDto.LIMIT_FOR_PAGE_DESCRIPTION,
+            example = OpenApiOrderListRequestDto.LIMIT_FOR_PAGE_EXAMPLE,
+            defaultValue = OpenApiOrderListRequestDto.LIMIT_FOR_PAGE_DEFAULT)
+    private Integer limitForPage = OrderListRequestDtoConstants.LIMIT_FOR_PAGE_DEFAULT;
 
-    @Schema(description = "Filter orders by status (optional)", example = "PENDING")
+    @Schema(description = OpenApiOrderListRequestDto.STATUS_DESCRIPTION,
+            example = OpenApiOrderListRequestDto.STATUS_EXAMPLE)
     private String status;
 
-    @Schema(description = "Restaurant ID to list orders from", example = "1", required = true)
+    @Schema(description = OpenApiOrderListRequestDto.RESTAURANT_ID_DESCRIPTION,
+            example = OpenApiOrderListRequestDto.RESTAURANT_ID_EXAMPLE,
+            required = true)
+    @NotNull(message = OrderListRequestDtoConstants.RESTAURANT_ID_IS_MANDATORY)
     private Long restaurantId;
 }

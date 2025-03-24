@@ -1,5 +1,6 @@
 package com.pragma.powerup.application.dto.response;
 
+import com.pragma.powerup.application.utils.constants.openapi.OpenApiDishListResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,26 +13,27 @@ import java.util.List;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "DTO for dish list response")
+@Schema(name = OpenApiDishListResponseDto.DTO_NAME,
+        description = OpenApiDishListResponseDto.DTO_DESCRIPTION)
 public class DishListResponseDto {
-    @Schema(description = "Dish name")
+    @Schema(description = OpenApiDishListResponseDto.NAME_DESCRIPTION)
     private String name;
 
-    @Schema(description = "Dish price")
+    @Schema(description = OpenApiDishListResponseDto.PRICE_DESCRIPTION)
     private Double price;
 
-    @Schema(description = "Dish description")
+    @Schema(description = OpenApiDishListResponseDto.DESCRIPTION_DESCRIPTION)
     private String description;
 
-    @Schema(description = "Dish image URL")
+    @Schema(description = OpenApiDishListResponseDto.URL_IMAGE_DESCRIPTION)
     private String urlImage;
 
-    @Schema(description = "Dish categories")
+    @Schema(description = OpenApiDishListResponseDto.CATEGORIES_DESCRIPTION)
     private List<String> categories;
 
-    @Schema(description = "Dish status")
+    @Schema(description = OpenApiDishListResponseDto.ACTIVE_DESCRIPTION)
     private boolean active;
 
-    @Schema(description = "Restaurant ID")
+    @Schema(description = OpenApiDishListResponseDto.RESTAURANT_ID_DESCRIPTION)
     private Long idRestaurant;
 }

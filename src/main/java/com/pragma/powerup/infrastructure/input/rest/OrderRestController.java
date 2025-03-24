@@ -53,7 +53,24 @@ public class OrderRestController {
                 .body(OpenApiOrderRestController.ORDER_CREATED_SUCCESSFULLY);
     }
 
+    @Operation(summary = OpenApiOrderRestController.LIST_ORDERS_SUMMARY,
+            description = OpenApiOrderRestController.LIST_ORDERS_DESCRIPTION)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_OK,
+                    description = OpenApiOrderRestController.LIST_ORDERS_200_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = Pagination.class))),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_BAD_REQUEST,
+                    description = OpenApiOrderRestController.LIST_ORDERS_400_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_UNAUTHORIZED,
+                    description = OpenApiOrderRestController.LIST_ORDERS_401_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_FORBIDDEN,
+                    description = OpenApiOrderRestController.LIST_ORDERS_403_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @GetMapping
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<Pagination<OrderListResponseDto>> listOrders(@Valid OrderListRequestDto orderListRequestDto) {
         return ResponseEntity.ok(orderHandler.orderList(orderListRequestDto));
     }

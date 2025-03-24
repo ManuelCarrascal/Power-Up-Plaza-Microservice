@@ -1,5 +1,6 @@
 package com.pragma.powerup.application.dto.response;
 
+import com.pragma.powerup.application.utils.constants.openapi.OpenApiOrderDishResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -10,17 +11,18 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "DTO for order dish in order list")
+@Schema(name = OpenApiOrderDishResponseDto.DTO_NAME,
+        description = OpenApiOrderDishResponseDto.DTO_DESCRIPTION)
 public class OrderDishResponseDto {
-    @Schema(description = "Dish ID")
+    @Schema(description = OpenApiOrderDishResponseDto.DISH_ID_DESCRIPTION)
     private Long dishId;
 
-    @Schema(description = "Dish name")
+    @Schema(description = OpenApiOrderDishResponseDto.NAME_DESCRIPTION)
     private String name;
 
-    @Schema(description = "Quantity ordered")
+    @Schema(description = OpenApiOrderDishResponseDto.QUANTITY_DESCRIPTION)
     private Integer quantity;
 
-    @Schema(description = "Unit price")
+    @Schema(description = OpenApiOrderDishResponseDto.PRICE_DESCRIPTION)
     private Double price;
 }

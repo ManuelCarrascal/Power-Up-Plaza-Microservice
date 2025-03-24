@@ -1,6 +1,7 @@
 package com.pragma.powerup.infrastructure.out.jpa.adapter;
 
 import com.pragma.powerup.domain.model.Order;
+import com.pragma.powerup.domain.model.OrderDish;
 import com.pragma.powerup.domain.model.Pagination;
 import com.pragma.powerup.domain.spi.IOrderPersistencePort;
 import com.pragma.powerup.infrastructure.out.jpa.entity.OrderDishEntity;
@@ -65,14 +66,7 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
             orderEntityPage = orderRepository.findAllByRestaurantId(restaurantId, pageable);
         }
 
-        List<OrderEntity> orderEntities = orderEntityPage.getContent();
-        List<Order> orders = orderEntityMapper.toOrderList(orderEntities);
-
-        // For each order, fetch and map its dishes
-        for (Order order : orders) {
-            List<OrderDishEntity> orderDishEntities = orderDishRepository.findByOrderId(order.getId());
-            order.setDishes(orderDishEntityMapper.toOrderDishList(orderDishEntities));
-        }
+        List<Order> orders = orderEntityMapper.toOrderList(orderEntityPage.getContent());
 
         return new Pagination<>(
                 Sort.Direction.fromString(orderDirection).equals(Sort.Direction.ASC),
@@ -81,5 +75,11 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
                 orderEntityPage.getTotalElements(),
                 orders
         );
+    }
+
+    @Override
+    public List<OrderDish> findDishesByOrderId(Long orderId) {
+        List<OrderDishEntity> orderDishEntities = orderDishRepository.findByOrderId(orderId);
+        return orderDishEntityMapper.toOrderDishList(orderDishEntities);
     }
 }

@@ -55,8 +55,17 @@ public class OrderUseCase implements IOrderServicePort {
         if (!userPersistencePort.isEmployeeOfRestaurant(employeeId, restaurantId)) {
             throw new CustomValidationException( "Employee does not work at this restaurant");
         }
+        // Obtener órdenes paginadas
+        Pagination<Order> orderPagination = orderPersistencePort.listOrders(orderDirection, currentPage, limitForPage, status, restaurantId);
 
-        return orderPersistencePort.listOrders(orderDirection, currentPage, limitForPage, status, restaurantId);
+        // Obtener y setear platos para cada orden
+        List<Order> orders = orderPagination.getContent();
+        for (Order order : orders) {
+            List<OrderDish> orderDishes = orderPersistencePort.findDishesByOrderId(order.getId());
+            order.setDishes(orderDishes);
+        }
+
+        return orderPagination;
     }
 
     private void validateClientHasNoActiveOrder(Long clientId) {

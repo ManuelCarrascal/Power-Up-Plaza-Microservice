@@ -1,5 +1,6 @@
 package com.pragma.powerup.application.dto.response;
 
+import com.pragma.powerup.application.utils.constants.openapi.OpenApiOrderListResponseDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -8,27 +9,29 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "DTO for order list response")
+@Schema(name = OpenApiOrderListResponseDto.DTO_NAME,
+        description = OpenApiOrderListResponseDto.DTO_DESCRIPTION)
 public class OrderListResponseDto {
-    @Schema(description = "Order ID")
+    @Schema(description = OpenApiOrderListResponseDto.ID_DESCRIPTION)
     private Long id;
 
-    @Schema(description = "Client ID")
+    @Schema(description = OpenApiOrderListResponseDto.CLIENT_ID_DESCRIPTION)
     private Long clientId;
 
-    @Schema(description = "Restaurant ID")
+    @Schema(description = OpenApiOrderListResponseDto.RESTAURANT_ID_DESCRIPTION)
     private Long restaurantId;
 
-    @Schema(description = "Order date")
+    @Schema(description = OpenApiOrderListResponseDto.DATE_DESCRIPTION)
     private LocalDate date;
 
-    @Schema(description = "Order status")
+    @Schema(description = OpenApiOrderListResponseDto.STATUS_DESCRIPTION)
     private String status;
 
-    @Schema(description = "Order dishes")
+    @Schema(description = OpenApiOrderListResponseDto.DISHES_DESCRIPTION)
     private List<OrderDishResponseDto> dishes;
 }
