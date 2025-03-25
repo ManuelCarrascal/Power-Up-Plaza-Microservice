@@ -5,10 +5,7 @@ import com.pragma.powerup.domain.model.Order;
 import com.pragma.powerup.domain.model.OrderDish;
 import com.pragma.powerup.domain.model.Pagination;
 import com.pragma.powerup.domain.model.Restaurant;
-import com.pragma.powerup.domain.spi.IDishPersistencePort;
-import com.pragma.powerup.domain.spi.IOrderPersistencePort;
-import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
-import com.pragma.powerup.domain.spi.IUserPersistencePort;
+import com.pragma.powerup.domain.spi.*;
 import com.pragma.powerup.domain.utils.constants.OrderUseCaseConstants;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -41,6 +38,9 @@ class OrderUseCaseTest {
 
     @Mock
     private IUserPersistencePort userPersistencePort;
+
+    @Mock
+    private INotificationPersistencePort notificationPersistencePort;
 
     @InjectMocks
     private OrderUseCase orderUseCase;
@@ -506,5 +506,119 @@ class OrderUseCaseTest {
         );
         assertEquals(OrderUseCaseConstants.EMPLOYEE_NOT_RESTAURANT_WORKER, exception.getMessage());
         verify(orderPersistencePort, never()).updateOrder(any());
+    }
+
+    @Test
+    void orderReady_Success() {
+        Long employeeId = 1L;
+        Long orderId = 1L;
+        Long restaurantId = 1L;
+        String clientPhoneNumber = "+573001234567";
+
+        order.setId(orderId);
+        order.setRestaurantId(restaurantId);
+        order.setStatus(OrderUseCaseConstants.STATUS_IN_PREPARATION);
+        order.setClientId(2L);
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+        when(restaurantPersistencePort.findById(restaurantId)).thenReturn(Optional.of(restaurant));
+        when(userPersistencePort.isEmployeeOfRestaurant(employeeId, restaurantId)).thenReturn(true);
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.of(order));
+        when(userPersistencePort.getPhoneNumberById(order.getClientId())).thenReturn(clientPhoneNumber);
+
+        orderUseCase.orderReady(orderId, restaurantId);
+
+        assertEquals(OrderUseCaseConstants.STATUS_READY, order.getStatus());
+        verify(notificationPersistencePort).saveNotification(orderId, clientPhoneNumber);
+        verify(orderPersistencePort).updateOrder(order);
+    }
+
+    @Test
+    void orderReady_NotInPreparation_ThrowsException() {
+        Long employeeId = 1L;
+        Long orderId = 1L;
+        Long restaurantId = 1L;
+
+        order.setId(orderId);
+        order.setRestaurantId(restaurantId);
+        order.setStatus(OrderUseCaseConstants.STATUS_PENDING); // Wrong status
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+        when(restaurantPersistencePort.findById(restaurantId)).thenReturn(Optional.of(restaurant));
+        when(userPersistencePort.isEmployeeOfRestaurant(employeeId, restaurantId)).thenReturn(true);
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.of(order));
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.orderReady(orderId, restaurantId)
+        );
+        assertEquals(OrderUseCaseConstants.ORDER_NOT_IN_PREPARATION, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
+        verify(notificationPersistencePort, never()).saveNotification(any(), any());
+    }
+
+    @Test
+    void orderReady_NotificationSent() {
+        Long employeeId = 1L;
+        Long orderId = 1L;
+        Long restaurantId = 1L;
+        Long clientId = 2L;
+        String clientPhoneNumber = "+573001234567";
+
+        order.setId(orderId);
+        order.setRestaurantId(restaurantId);
+        order.setStatus(OrderUseCaseConstants.STATUS_IN_PREPARATION);
+        order.setClientId(clientId);
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+        when(restaurantPersistencePort.findById(restaurantId)).thenReturn(Optional.of(restaurant));
+        when(userPersistencePort.isEmployeeOfRestaurant(employeeId, restaurantId)).thenReturn(true);
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.of(order));
+        when(userPersistencePort.getPhoneNumberById(clientId)).thenReturn(clientPhoneNumber);
+
+        orderUseCase.orderReady(orderId, restaurantId);
+
+        verify(notificationPersistencePort).saveNotification(orderId, clientPhoneNumber);
+    }
+
+    @Test
+    void orderReady_NullOrderId_ThrowsException() {
+        Long employeeId = 1L;
+        Long restaurantId = 1L;
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.orderReady(null, restaurantId)
+        );
+        assertEquals(OrderUseCaseConstants.ORDER_ID_INVALID, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
+        verify(notificationPersistencePort, never()).saveNotification(any(), any());
+    }
+
+    @Test
+    void orderReady_OrderFromDifferentRestaurant_ThrowsException() {
+        Long employeeId = 1L;
+        Long orderId = 1L;
+        Long restaurantId = 1L;
+        Long differentRestaurantId = 2L;
+
+        order.setId(orderId);
+        order.setRestaurantId(differentRestaurantId);
+        order.setStatus(OrderUseCaseConstants.STATUS_IN_PREPARATION);
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+        when(restaurantPersistencePort.findById(restaurantId)).thenReturn(Optional.of(restaurant));
+        when(userPersistencePort.isEmployeeOfRestaurant(employeeId, restaurantId)).thenReturn(true);
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.of(order));
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.orderReady(orderId, restaurantId)
+        );
+        assertEquals(OrderUseCaseConstants.ORDER_NOT_RESTAURANT, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
+        verify(notificationPersistencePort, never()).saveNotification(any(), any());
     }
 }
