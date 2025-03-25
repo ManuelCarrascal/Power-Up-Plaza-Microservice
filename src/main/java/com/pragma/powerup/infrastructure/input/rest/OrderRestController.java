@@ -97,4 +97,11 @@ public class OrderRestController {
         orderHandler.assignEmployee(assignEmployeeRequestDto);
         return ResponseEntity.ok(OpenApiOrderRestController.EMPLOYEE_ASSIGNED_SUCCESSFULLY);
     }
+
+    @PostMapping("/ready")
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
+    public ResponseEntity<String> orderReady(@RequestBody AssignEmployeeRequestDto assignEmployeeRequestDto) {
+        orderHandler.orderReady(assignEmployeeRequestDto);
+        return ResponseEntity.ok("Order is ready");
+    }
 }
