@@ -12,8 +12,6 @@ public class Restaurant {
     private Long idOwner;
     private List<Category> categories;
 
-
-
     private Restaurant(Builder builder) {
         this.id = builder.id;
         this.name = builder.name;
