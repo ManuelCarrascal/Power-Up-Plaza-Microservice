@@ -98,9 +98,27 @@ public class OrderRestController {
         return ResponseEntity.ok(OpenApiOrderRestController.EMPLOYEE_ASSIGNED_SUCCESSFULLY);
     }
 
+    @Operation(summary = "Mark order as ready for delivery",
+            description = "Updates the order status to READY and sends a notification to the client")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_OK,
+                    description = "Order status successfully updated to READY"),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_BAD_REQUEST,
+                    description = "Invalid request - order cannot be marked as ready",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_UNAUTHORIZED,
+                    description = "Authentication credentials are missing or invalid",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_FORBIDDEN,
+                    description = "User does not have permission to mark this order as ready",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_NOT_FOUND,
+                    description = "Order not found or not in the correct state",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PostMapping("/ready")
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
-    public ResponseEntity<String> orderReady(@RequestBody AssignEmployeeRequestDto assignEmployeeRequestDto) {
+    public ResponseEntity<String> orderReady(@Valid @RequestBody AssignEmployeeRequestDto assignEmployeeRequestDto) {
         orderHandler.orderReady(assignEmployeeRequestDto);
         return ResponseEntity.ok("Order is ready");
     }
