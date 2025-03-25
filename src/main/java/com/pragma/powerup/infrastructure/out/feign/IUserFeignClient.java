@@ -24,6 +24,12 @@ public interface IUserFeignClient {
     @GetMapping("/auth/authenticated-user")
     UserDetailImpl getUserAuthenticated();
 
+    @GetMapping(
+            value = UserFeignConstants.USER_PHONE_NUMBER_PATH,
+            produces = UserFeignConstants.CONTENT_TYPE_JSON
+    )
+    String getPhoneNumberById(@RequestParam(UserFeignConstants.USER_ID_PARAM) Long userId);
+
 }
 
 

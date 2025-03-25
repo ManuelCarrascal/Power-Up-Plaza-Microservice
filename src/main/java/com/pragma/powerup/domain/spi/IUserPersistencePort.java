@@ -7,4 +7,7 @@ public interface IUserPersistencePort {
 
     boolean isEmployeeOfRestaurant(Long employeeId, Long restaurantId);
 
+    String getPhoneNumberById(Long userId);
+
+
 }

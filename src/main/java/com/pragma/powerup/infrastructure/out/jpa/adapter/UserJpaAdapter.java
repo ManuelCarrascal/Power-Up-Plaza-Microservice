@@ -31,4 +31,10 @@ public class UserJpaAdapter implements IUserPersistencePort {
         return employeeRepository.existsByUserIdAndRestaurantId(employeeId, restaurantId);
     }
 
+    @Override
+    public String getPhoneNumberById(Long userId) {
+        return userFeignClient.getPhoneNumberById(userId);
+
+    }
+
 }

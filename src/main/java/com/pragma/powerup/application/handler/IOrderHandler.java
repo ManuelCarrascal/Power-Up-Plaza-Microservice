@@ -10,5 +10,5 @@ public interface IOrderHandler {
     void saveOrder(OrderRequestDto orderRequestDto);
     Pagination<OrderListResponseDto> orderList(OrderListRequestDto orderListRequestDto);
     void assignEmployee(AssignEmployeeRequestDto assignEmployeeRequestDto);
-
+    void orderReady(AssignEmployeeRequestDto assignEmployeeRequestDto);
 }

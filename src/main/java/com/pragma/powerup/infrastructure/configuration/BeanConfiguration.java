@@ -11,6 +11,7 @@ import com.pragma.powerup.domain.usecase.OrderUseCase;
 import com.pragma.powerup.domain.usecase.RestaurantUseCase;
 import com.pragma.powerup.domain.utils.validators.DishValidator;
 import com.pragma.powerup.domain.utils.validators.RestaurantValidator;
+import com.pragma.powerup.infrastructure.out.feign.INotificationFeignClient;
 import com.pragma.powerup.infrastructure.out.feign.IUserFeignClient;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.*;
 import com.pragma.powerup.infrastructure.out.jpa.mapper.*;
@@ -36,6 +37,7 @@ public class BeanConfiguration {
     private final IOrderDishRepository orderDishRepository;
     private final IOrderEntityMapper orderEntityMapper;
     private final IOrderDishEntityMapper orderDishEntityMapper;
+    private final INotificationFeignClient notificationFeignClient;
 
     @Bean
     public DishValidator dishValidator() {
@@ -57,7 +59,8 @@ public class BeanConfiguration {
                 orderPersistencePort(),
                 restaurantPersistencePort(),
                 dishPersistencePort(),
-                userPersistencePort()
+                userPersistencePort(),
+                nofiticationPersistencePort()
         );
     }
 
@@ -84,6 +87,11 @@ public class BeanConfiguration {
     @Bean
     public IUserPersistencePort userPersistencePort() {
         return new UserJpaAdapter(userFeignClient, employeeRepository);
+    }
+
+    @Bean
+    public INotificationPersistencePort nofiticationPersistencePort() {
+        return new NotificationJpaAdapter(notificationFeignClient);
     }
 
     @Bean
