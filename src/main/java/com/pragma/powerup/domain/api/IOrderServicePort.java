@@ -13,5 +13,5 @@ public interface IOrderServicePort {
             String status,
             Long restaurantId);
 
-    void assingEmployeeToOrder(Long orderId, Long idRestaurant);
+    void assignEmployeeToOrder(Long orderId, Long idRestaurant);
 }

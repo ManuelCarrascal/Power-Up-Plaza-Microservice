@@ -40,6 +40,6 @@ public class OrderHandler implements IOrderHandler {
 
     @Override
     public void assignEmployee(AssignEmployeeRequestDto assignEmployeeRequestDto) {
-        orderServicePort.assingEmployeeToOrder(assignEmployeeRequestDto.getIdOrder(), assignEmployeeRequestDto.getIdRestaurant());
+        orderServicePort.assignEmployeeToOrder(assignEmployeeRequestDto.getIdOrder(), assignEmployeeRequestDto.getIdRestaurant());
     }
 }

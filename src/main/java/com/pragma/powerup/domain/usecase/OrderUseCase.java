@@ -64,7 +64,7 @@ public class OrderUseCase implements IOrderServicePort {
     }
 
     @Override
-    public void assingEmployeeToOrder(Long orderId, Long idRestaurant) {
+    public void assignEmployeeToOrder(Long orderId, Long idRestaurant) {
         Long employeeId = userPersistencePort.getCurrentUserId();
 
         if (orderId == null || orderId <= OrderUseCaseConstants.MINIMUM_VALID_ID) {
@@ -91,7 +91,6 @@ public class OrderUseCase implements IOrderServicePort {
         order.setIdEmployee(employeeId);
         order.setStatus(OrderUseCaseConstants.STATUS_IN_PREPARATION);
 
-        // Save order
         orderPersistencePort.updateOrder(order);
 
     }

@@ -76,9 +76,25 @@ public class OrderRestController {
         return ResponseEntity.ok(orderHandler.orderList(orderListRequestDto));
     }
 
+    @Operation(summary = OpenApiOrderRestController.ASSIGN_EMPLOYEE_SUMMARY,
+            description = OpenApiOrderRestController.ASSIGN_EMPLOYEE_DESCRIPTION)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_OK,
+                    description = OpenApiOrderRestController.ASSIGN_EMPLOYEE_200_DESCRIPTION),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_BAD_REQUEST,
+                    description = OpenApiOrderRestController.ASSIGN_EMPLOYEE_400_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_UNAUTHORIZED,
+                    description = OpenApiOrderRestController.ASSIGN_EMPLOYEE_401_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_FORBIDDEN,
+                    description = OpenApiOrderRestController.ASSIGN_EMPLOYEE_403_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PatchMapping("/assign")
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<String> assignEmployeeToOrder(@Valid @RequestBody AssignEmployeeRequestDto assignEmployeeRequestDto) {
         orderHandler.assignEmployee(assignEmployeeRequestDto);
-        return ResponseEntity.ok("Employee successfully assigned to order");
+        return ResponseEntity.ok(OpenApiOrderRestController.EMPLOYEE_ASSIGNED_SUCCESSFULLY);
     }
 }

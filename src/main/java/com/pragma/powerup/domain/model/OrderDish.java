@@ -18,7 +18,6 @@ public class OrderDish {
         this.price = price;
     }
 
-    // Original getters and setters
     public Long getId() {
         return id;
     }
@@ -43,7 +42,6 @@ public class OrderDish {
         this.quantity = quantity;
     }
 
-    // New getters and setters
     public String getName() {
         return name;
     }
