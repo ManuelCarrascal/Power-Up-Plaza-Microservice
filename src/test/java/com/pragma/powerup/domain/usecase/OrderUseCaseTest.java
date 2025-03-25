@@ -296,7 +296,6 @@ class OrderUseCaseTest {
     @Test
     void orderList_NullRestaurantId_ThrowsException() {
         Long employeeId = 1L;
-        Long restaurantId = null;
         String status = "PENDING";
         Integer currentPage = 0;
         Integer limitForPage = 10;
@@ -306,7 +305,7 @@ class OrderUseCaseTest {
 
         CustomValidationException exception = assertThrows(
                 CustomValidationException.class,
-                () -> orderUseCase.orderList(orderDirection, currentPage, limitForPage, status, restaurantId)
+                () -> orderUseCase.orderList(orderDirection, currentPage, limitForPage, status, null)
         );
         assertEquals(OrderUseCaseConstants.RESTAURANT_ID_INVALID, exception.getMessage());
 
@@ -371,5 +370,141 @@ class OrderUseCaseTest {
         );
         assertEquals(OrderUseCaseConstants.EMPLOYEE_NOT_RESTAURANT_WORKER, exception.getMessage());
         verify(orderPersistencePort, never()).listOrders(any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void assignEmployeeToOrder_Success() {
+        Long employeeId = 1L;
+        Long orderId = 1L;
+        Long restaurantId = 1L;
+
+        order.setId(orderId);
+        order.setRestaurantId(restaurantId);
+        order.setStatus(OrderUseCaseConstants.STATUS_PENDING);
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+        when(restaurantPersistencePort.findById(restaurantId)).thenReturn(Optional.of(restaurant));
+        when(userPersistencePort.isEmployeeOfRestaurant(employeeId, restaurantId)).thenReturn(true);
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.of(order));
+
+        orderUseCase.assignEmployeeToOrder(orderId, restaurantId);
+
+        assertEquals(employeeId, order.getIdEmployee());
+        assertEquals(OrderUseCaseConstants.STATUS_IN_PREPARATION, order.getStatus());
+        verify(orderPersistencePort).updateOrder(order);
+    }
+
+    @Test
+    void assignEmployeeToOrder_NullOrderId_ThrowsException() {
+        Long employeeId = 1L;
+        Long restaurantId = 1L;
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.assignEmployeeToOrder(null, restaurantId)
+        );
+        assertEquals(OrderUseCaseConstants.ORDER_ID_INVALID, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
+    }
+
+    @Test
+    void assignEmployeeToOrder_InvalidOrderId_ThrowsException() {
+        Long employeeId = 1L;
+        Long orderId = 0L;
+        Long restaurantId = 1L;
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.assignEmployeeToOrder(orderId, restaurantId)
+        );
+        assertEquals(OrderUseCaseConstants.ORDER_ID_INVALID, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
+    }
+
+    @Test
+    void assignEmployeeToOrder_OrderNotFound_ThrowsException() {
+        Long employeeId = 1L;
+        Long orderId = 1L;
+        Long restaurantId = 1L;
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+        when(restaurantPersistencePort.findById(restaurantId)).thenReturn(Optional.of(restaurant));
+        when(userPersistencePort.isEmployeeOfRestaurant(employeeId, restaurantId)).thenReturn(true);
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.empty());
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.assignEmployeeToOrder(orderId, restaurantId)
+        );
+        assertEquals(OrderUseCaseConstants.ORDER_NOT_FOUND, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
+    }
+
+    @Test
+    void assignEmployeeToOrder_OrderFromDifferentRestaurant_ThrowsException() {
+        Long employeeId = 1L;
+        Long orderId = 1L;
+        Long restaurantId = 1L;
+        Long differentRestaurantId = 2L;
+
+        order.setId(orderId);
+        order.setRestaurantId(differentRestaurantId);
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+        when(restaurantPersistencePort.findById(restaurantId)).thenReturn(Optional.of(restaurant));
+        when(userPersistencePort.isEmployeeOfRestaurant(employeeId, restaurantId)).thenReturn(true);
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.of(order));
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.assignEmployeeToOrder(orderId, restaurantId)
+        );
+        assertEquals(OrderUseCaseConstants.ORDER_NOT_RESTAURANT, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
+    }
+
+    @Test
+    void assignEmployeeToOrder_OrderNotInPendingState_ThrowsException() {
+        Long employeeId = 1L;
+        Long orderId = 1L;
+        Long restaurantId = 1L;
+
+        order.setId(orderId);
+        order.setRestaurantId(restaurantId);
+        order.setStatus(OrderUseCaseConstants.STATUS_IN_PREPARATION); // Order already in preparation
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+        when(restaurantPersistencePort.findById(restaurantId)).thenReturn(Optional.of(restaurant));
+        when(userPersistencePort.isEmployeeOfRestaurant(employeeId, restaurantId)).thenReturn(true);
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.of(order));
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.assignEmployeeToOrder(orderId, restaurantId)
+        );
+        assertEquals(OrderUseCaseConstants.ORDER_NOT_PENDING, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
+    }
+
+    @Test
+    void assignEmployeeToOrder_EmployeeNotWorkingAtRestaurant_ThrowsException() {
+        Long employeeId = 1L;
+        Long orderId = 1L;
+        Long restaurantId = 1L;
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(employeeId);
+        when(restaurantPersistencePort.findById(restaurantId)).thenReturn(Optional.of(restaurant));
+        when(userPersistencePort.isEmployeeOfRestaurant(employeeId, restaurantId)).thenReturn(false);
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.assignEmployeeToOrder(orderId, restaurantId)
+        );
+        assertEquals(OrderUseCaseConstants.EMPLOYEE_NOT_RESTAURANT_WORKER, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
     }
 }
