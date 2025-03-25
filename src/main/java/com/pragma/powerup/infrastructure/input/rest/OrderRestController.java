@@ -1,5 +1,6 @@
 package com.pragma.powerup.infrastructure.input.rest;
 
+import com.pragma.powerup.application.dto.request.AssignEmployeeRequestDto;
 import com.pragma.powerup.application.dto.request.OrderListRequestDto;
 import com.pragma.powerup.application.dto.request.OrderRequestDto;
 import com.pragma.powerup.application.dto.response.OrderListResponseDto;
@@ -73,5 +74,11 @@ public class OrderRestController {
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<Pagination<OrderListResponseDto>> listOrders(@Valid OrderListRequestDto orderListRequestDto) {
         return ResponseEntity.ok(orderHandler.orderList(orderListRequestDto));
+    }
+
+    @PatchMapping("/assign")
+    public ResponseEntity<String> assignEmployeeToOrder(@Valid @RequestBody AssignEmployeeRequestDto assignEmployeeRequestDto) {
+        orderHandler.assignEmployee(assignEmployeeRequestDto);
+        return ResponseEntity.ok("Employee successfully assigned to order");
     }
 }

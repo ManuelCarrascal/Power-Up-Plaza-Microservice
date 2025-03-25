@@ -12,4 +12,6 @@ public interface IOrderServicePort {
             Integer limitForPage,
             String status,
             Long restaurantId);
+
+    void assingEmployeeToOrder(Long orderId, Long idRestaurant);
 }

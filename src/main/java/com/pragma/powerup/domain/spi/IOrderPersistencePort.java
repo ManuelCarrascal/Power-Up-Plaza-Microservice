@@ -5,6 +5,7 @@ import com.pragma.powerup.domain.model.OrderDish;
 import com.pragma.powerup.domain.model.Pagination;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface IOrderPersistencePort {
     void createOrder(Order order);
@@ -19,4 +20,6 @@ public interface IOrderPersistencePort {
             Long restaurantId);
 
     List<OrderDish> findDishesByOrderId(Long orderId);
+    Optional<Order> findById(Long orderId);
+    void updateOrder(Order order);
 }
