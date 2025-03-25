@@ -23,4 +23,7 @@ public class OrderUseCaseConstants {
     public static final String ORDER_NOT_RESTAURANT = "Order does not belong to this restaurant";
     public static final String ORDER_NOT_PENDING = "Order is not in PENDING state";
 
+    public static final String STATUS_READY = "READY";
+    public static final String ORDER_NOT_IN_PREPARATION = "Order is not in IN_PREPARATION state";
+
 }

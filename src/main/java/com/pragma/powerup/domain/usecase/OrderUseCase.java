@@ -5,10 +5,7 @@ import com.pragma.powerup.domain.exception.CustomValidationException;
 import com.pragma.powerup.domain.model.Order;
 import com.pragma.powerup.domain.model.OrderDish;
 import com.pragma.powerup.domain.model.Pagination;
-import com.pragma.powerup.domain.spi.IDishPersistencePort;
-import com.pragma.powerup.domain.spi.IOrderPersistencePort;
-import com.pragma.powerup.domain.spi.IRestaurantPersistencePort;
-import com.pragma.powerup.domain.spi.IUserPersistencePort;
+import com.pragma.powerup.domain.spi.*;
 import com.pragma.powerup.domain.utils.constants.OrderUseCaseConstants;
 
 import java.time.LocalDate;
@@ -20,12 +17,14 @@ public class OrderUseCase implements IOrderServicePort {
     private final IRestaurantPersistencePort restaurantPersistencePort;
     private final IDishPersistencePort dishPersistencePort;
     private final IUserPersistencePort userPersistencePort;
+    private final INotificationPersistencePort notificationPersistencePort;
 
-    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, IDishPersistencePort dishPersistencePort, IUserPersistencePort userPersistencePort) {
+    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, IDishPersistencePort dishPersistencePort, IUserPersistencePort userPersistencePort, INotificationPersistencePort notificationPersistencePort) {
         this.orderPersistencePort = orderPersistencePort;
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.dishPersistencePort = dishPersistencePort;
         this.userPersistencePort = userPersistencePort;
+        this.notificationPersistencePort = notificationPersistencePort;
     }
 
     @Override
@@ -67,34 +66,34 @@ public class OrderUseCase implements IOrderServicePort {
     public void assignEmployeeToOrder(Long orderId, Long idRestaurant) {
         Long employeeId = userPersistencePort.getCurrentUserId();
 
-        if (orderId == null || orderId <= OrderUseCaseConstants.MINIMUM_VALID_ID) {
-            throw new CustomValidationException(OrderUseCaseConstants.ORDER_ID_INVALID);
-        }
-
-        validateRestaurant(idRestaurant);
-
-        if (!userPersistencePort.isEmployeeOfRestaurant(employeeId, idRestaurant)) {
-            throw new CustomValidationException(OrderUseCaseConstants.EMPLOYEE_NOT_RESTAURANT_WORKER);
-        }
-
-        Order order = orderPersistencePort.findById(orderId)
-                .orElseThrow(() -> new CustomValidationException(OrderUseCaseConstants.ORDER_NOT_FOUND));
-
-        if (!order.getRestaurantId().equals(idRestaurant)) {
-            throw new CustomValidationException(OrderUseCaseConstants.ORDER_NOT_RESTAURANT);
-        }
-
-        if (!OrderUseCaseConstants.STATUS_PENDING.equals(order.getStatus())) {
-            throw new CustomValidationException(OrderUseCaseConstants.ORDER_NOT_PENDING);
-        }
+        Order order = validateOrderOperation(
+                orderId,
+                idRestaurant,
+                OrderUseCaseConstants.STATUS_PENDING,
+                OrderUseCaseConstants.ORDER_NOT_PENDING
+        );
 
         order.setIdEmployee(employeeId);
         order.setStatus(OrderUseCaseConstants.STATUS_IN_PREPARATION);
 
         orderPersistencePort.updateOrder(order);
-
     }
 
+    @Override
+    public void orderReady(Long idOrder, Long idRestaurant) {
+        Order order = validateOrderOperation(
+                idOrder,
+                idRestaurant,
+                OrderUseCaseConstants.STATUS_IN_PREPARATION,
+                OrderUseCaseConstants.ORDER_NOT_IN_PREPARATION
+        );
+
+        order.setStatus(OrderUseCaseConstants.STATUS_READY);
+        String clientPhoneNumber = userPersistencePort.getPhoneNumberById(order.getClientId());
+
+        notificationPersistencePort.saveNotification(idOrder, clientPhoneNumber);
+        orderPersistencePort.updateOrder(order);
+    }
 
     private void validateClientHasNoActiveOrder(Long clientId) {
         if (orderPersistencePort.findOrderByClientId(clientId)) {
@@ -133,5 +132,32 @@ public class OrderUseCase implements IOrderServicePort {
                 throw new CustomValidationException(OrderUseCaseConstants.DISH_RESTAURANT_MISMATCH);
             }
         }
+    }
+
+    private Order validateOrderOperation(Long orderId, Long restaurantId, String expectedStatus, String errorMessage) {
+        Long employeeId = userPersistencePort.getCurrentUserId();
+
+        if (orderId == null || orderId <= OrderUseCaseConstants.MINIMUM_VALID_ID) {
+            throw new CustomValidationException(OrderUseCaseConstants.ORDER_ID_INVALID);
+        }
+
+        validateRestaurant(restaurantId);
+
+        if (!userPersistencePort.isEmployeeOfRestaurant(employeeId, restaurantId)) {
+            throw new CustomValidationException(OrderUseCaseConstants.EMPLOYEE_NOT_RESTAURANT_WORKER);
+        }
+
+        Order order = orderPersistencePort.findById(orderId)
+                .orElseThrow(() -> new CustomValidationException(OrderUseCaseConstants.ORDER_NOT_FOUND));
+
+        if (!order.getRestaurantId().equals(restaurantId)) {
+            throw new CustomValidationException(OrderUseCaseConstants.ORDER_NOT_RESTAURANT);
+        }
+
+        if (!expectedStatus.equals(order.getStatus())) {
+            throw new CustomValidationException(errorMessage);
+        }
+
+        return order;
     }
 }
