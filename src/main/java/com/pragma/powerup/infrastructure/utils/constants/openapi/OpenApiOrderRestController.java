@@ -22,4 +22,12 @@ public class OpenApiOrderRestController {
     public static final String LIST_ORDERS_400_DESCRIPTION = "Bad request: invalid parameters";
     public static final String LIST_ORDERS_401_DESCRIPTION = "Unauthorized: authentication required";
     public static final String LIST_ORDERS_403_DESCRIPTION = "Forbidden: user is not an employee of the restaurant";
+
+    public static final String ASSIGN_EMPLOYEE_SUMMARY = "Assign an employee to an order";
+    public static final String ASSIGN_EMPLOYEE_DESCRIPTION = "Assigns the authenticated employee to the specified order and changes the order status to IN_PREPARATION";
+    public static final String ASSIGN_EMPLOYEE_200_DESCRIPTION = "Employee successfully assigned to order";
+    public static final String ASSIGN_EMPLOYEE_400_DESCRIPTION = "Invalid request - Order not found, order not in PENDING state, or order does not belong to restaurant";
+    public static final String ASSIGN_EMPLOYEE_401_DESCRIPTION = "Unauthorized - Authentication required";
+    public static final String ASSIGN_EMPLOYEE_403_DESCRIPTION = "Forbidden - User is not an employee of the restaurant";
+    public static final String EMPLOYEE_ASSIGNED_SUCCESSFULLY = "Employee successfully assigned to order";
 }

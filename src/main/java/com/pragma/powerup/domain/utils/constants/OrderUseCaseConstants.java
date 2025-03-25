@@ -17,4 +17,10 @@ public class OrderUseCaseConstants {
     public static final String DISH_RESTAURANT_MISMATCH = "Dish id mismatch";
     public static final String EMPLOYEE_NOT_RESTAURANT_WORKER = "Employee does not work at this restaurant";
 
+    public static final String STATUS_IN_PREPARATION = "IN_PREPARATION";
+    public static final String ORDER_ID_INVALID = "Order ID is invalid";
+    public static final String ORDER_NOT_FOUND = "Order not found";
+    public static final String ORDER_NOT_RESTAURANT = "Order does not belong to this restaurant";
+    public static final String ORDER_NOT_PENDING = "Order is not in PENDING state";
+
 }

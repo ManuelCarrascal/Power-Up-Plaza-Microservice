@@ -21,6 +21,7 @@ import org.springframework.stereotype.Component;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -81,5 +82,20 @@ public class OrderJpaAdapter implements IOrderPersistencePort {
     public List<OrderDish> findDishesByOrderId(Long orderId) {
         List<OrderDishEntity> orderDishEntities = orderDishRepository.findByOrderId(orderId);
         return orderDishEntityMapper.toOrderDishList(orderDishEntities);
+    }
+
+    @Override
+    public Optional<Order> findById(Long orderId) {
+        return orderRepository.findById(orderId)
+                .map(orderEntityMapper::toOrder);
+    }
+
+    @Override
+    @Transactional
+    public void updateOrder(Order order) {
+        OrderEntity orderEntity = orderRepository.findById(order.getId()).orElseThrow();
+        orderEntity.setStatus(order.getStatus());
+        orderEntity.setIdEmployee(order.getIdEmployee());
+        orderRepository.save(orderEntity);
     }
 }

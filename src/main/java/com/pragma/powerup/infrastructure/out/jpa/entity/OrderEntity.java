@@ -21,6 +21,7 @@ public class OrderEntity {
     private Long clientId;
     private LocalDate date;
     private String status;
+    private Long idEmployee;
 
     @ManyToOne
     @JoinColumn(name = "restaurant_id", nullable = false)
