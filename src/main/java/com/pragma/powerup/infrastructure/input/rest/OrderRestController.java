@@ -124,9 +124,25 @@ public class OrderRestController {
         return ResponseEntity.ok("Order is ready");
     }
 
+    @Operation(summary = "Deliver order to customer",
+            description = "Marks an order as delivered after validating the security PIN provided by the customer")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_OK,
+                    description = "Order successfully delivered"),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_BAD_REQUEST,
+                    description = "Invalid request or incorrect PIN",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_UNAUTHORIZED,
+                    description = "Authentication credentials are missing or invalid",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_NOT_FOUND,
+                    description = "Order not found or not in READY state",
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
     @PostMapping("/deliver")
-    public ResponseEntity<Void> deliverOrder(@RequestBody DeliverOrderRequestDto deliverOrderDto) {
+    @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
+    public ResponseEntity<String> deliverOrder(@Valid @RequestBody DeliverOrderRequestDto deliverOrderDto) {
         orderHandler.deliverOrder(deliverOrderDto);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("Order delivered successfully");
     }
 }

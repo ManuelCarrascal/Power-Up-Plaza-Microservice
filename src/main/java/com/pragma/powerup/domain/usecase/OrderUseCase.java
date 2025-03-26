@@ -7,7 +7,6 @@ import com.pragma.powerup.domain.model.OrderDish;
 import com.pragma.powerup.domain.model.Pagination;
 import com.pragma.powerup.domain.spi.*;
 import com.pragma.powerup.domain.utils.constants.OrderUseCaseConstants;
-import com.pragma.powerup.infrastructure.out.jpa.repository.IOrderRepository;
 
 import java.time.LocalDate;
 import java.util.List;
