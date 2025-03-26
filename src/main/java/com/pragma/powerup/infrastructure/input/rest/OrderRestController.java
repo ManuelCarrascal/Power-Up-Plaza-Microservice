@@ -145,4 +145,29 @@ public class OrderRestController {
         orderHandler.deliverOrder(deliverOrderDto);
         return ResponseEntity.ok(OpenApiOrderRestController.ORDER_DELIVERED_SUCCESSFULLY);
     }
+
+    @Operation(summary = OpenApiOrderRestController.CANCEL_ORDER_SUMMARY,
+            description = OpenApiOrderRestController.CANCEL_ORDER_DESCRIPTION)
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_OK,
+                    description = OpenApiOrderRestController.CANCEL_ORDER_200_DESCRIPTION),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_BAD_REQUEST,
+                    description = OpenApiOrderRestController.CANCEL_ORDER_400_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_UNAUTHORIZED,
+                    description = OpenApiOrderRestController.CANCEL_ORDER_401_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_FORBIDDEN,
+                    description = OpenApiOrderRestController.CANCEL_ORDER_403_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_NOT_FOUND,
+                    description = OpenApiOrderRestController.CANCEL_ORDER_404_DESCRIPTION,
+                    content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+    })
+    @PostMapping("/{id}/cancel")
+    @PreAuthorize("hasRole('ROLE_CLIENT')")
+    public ResponseEntity<String> cancelOrder(@PathVariable Long id) {
+        orderHandler.cancelOrder(id);
+        return ResponseEntity.ok(OpenApiOrderRestController.ORDER_CANCELED_SUCCESSFULLY);
+    }
 }

@@ -31,4 +31,8 @@ public class OrderUseCaseConstants {
     public static final String PIN_REQUIRED = "Se requiere un PIN para entregar el pedido";
     public static final String INVALID_PIN = "El PIN proporcionado no es válido";
 
+    public static final String STATUS_CANCELED = "CANCELED";
+    public static final String CLIENT_NOT_ORDER_OWNER = "You are not the owner of this order";
+    public static final String ORDER_CANNOT_BE_CANCELED = "Lo sentimos, tu pedido ya está en preparación y no puede cancelarse";
+
 }
