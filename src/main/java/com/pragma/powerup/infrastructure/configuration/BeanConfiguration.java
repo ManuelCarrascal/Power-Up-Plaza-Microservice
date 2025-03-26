@@ -2,6 +2,7 @@ package com.pragma.powerup.infrastructure.configuration;
 
 import com.pragma.powerup.application.mapper.IPaginationDishResponseMapper;
 import com.pragma.powerup.application.mapper.IPaginationOrderResponseMapper;
+import com.pragma.powerup.application.mapper.ITraceabilityRequestMapper;
 import com.pragma.powerup.domain.api.IDishServicePort;
 import com.pragma.powerup.domain.api.IOrderServicePort;
 import com.pragma.powerup.domain.api.IRestaurantServicePort;
@@ -12,6 +13,7 @@ import com.pragma.powerup.domain.usecase.RestaurantUseCase;
 import com.pragma.powerup.domain.utils.validators.DishValidator;
 import com.pragma.powerup.domain.utils.validators.RestaurantValidator;
 import com.pragma.powerup.infrastructure.out.feign.INotificationFeignClient;
+import com.pragma.powerup.infrastructure.out.feign.ITraceabilityFeignClient;
 import com.pragma.powerup.infrastructure.out.feign.IUserFeignClient;
 import com.pragma.powerup.infrastructure.out.jpa.adapter.*;
 import com.pragma.powerup.infrastructure.out.jpa.mapper.*;
@@ -38,6 +40,8 @@ public class BeanConfiguration {
     private final IOrderEntityMapper orderEntityMapper;
     private final IOrderDishEntityMapper orderDishEntityMapper;
     private final INotificationFeignClient notificationFeignClient;
+    private final ITraceabilityFeignClient traceabilityFeignClient;
+
 
     @Bean
     public DishValidator dishValidator() {
@@ -53,6 +57,7 @@ public class BeanConfiguration {
     public IOrderPersistencePort orderPersistencePort() {
         return new OrderJpaAdapter(orderEntityMapper, orderRepository, dishRepository, orderDishRepository, orderDishEntityMapper);
     }
+
     @Bean
     public IOrderServicePort orderServicePort() {
         return new OrderUseCase(
@@ -60,7 +65,8 @@ public class BeanConfiguration {
                 restaurantPersistencePort(),
                 dishPersistencePort(),
                 userPersistencePort(),
-                nofiticationPersistencePort()
+                nofiticationPersistencePort(),
+                traceabilityPersistencePort()
         );
     }
 
@@ -80,6 +86,11 @@ public class BeanConfiguration {
     }
 
     @Bean
+    public ITraceabilityRequestMapper traceabilityRequestMapper() {
+        return Mappers.getMapper(ITraceabilityRequestMapper.class);
+    }
+
+    @Bean
     public ICategoryPersistencePort categoryPersistencePort() {
         return new CategoryJpaAdapter(categoryRepository, categoryEntityMapper);
     }
@@ -92,6 +103,11 @@ public class BeanConfiguration {
     @Bean
     public INotificationPersistencePort nofiticationPersistencePort() {
         return new NotificationJpaAdapter(notificationFeignClient);
+    }
+
+    @Bean
+    public ITraceabilityPersistencePort traceabilityPersistencePort() {
+        return new TraceabilityJpaAdapter(traceabilityFeignClient, traceabilityRequestMapper());
     }
 
     @Bean
