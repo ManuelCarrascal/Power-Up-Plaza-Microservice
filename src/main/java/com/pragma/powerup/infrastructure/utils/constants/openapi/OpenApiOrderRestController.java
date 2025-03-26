@@ -30,4 +30,21 @@ public class OpenApiOrderRestController {
     public static final String ASSIGN_EMPLOYEE_401_DESCRIPTION = "Unauthorized - Authentication required";
     public static final String ASSIGN_EMPLOYEE_403_DESCRIPTION = "Forbidden - User is not an employee of the restaurant";
     public static final String EMPLOYEE_ASSIGNED_SUCCESSFULLY = "Employee successfully assigned to order";
+
+    public static final String ORDER_READY_SUMMARY = "Mark order as ready for delivery";
+    public static final String ORDER_READY_DESCRIPTION = "Updates the order status to READY and sends a notification to the client";
+    public static final String ORDER_READY_200_DESCRIPTION = "Order status successfully updated to READY";
+    public static final String ORDER_READY_400_DESCRIPTION = "Invalid request - order cannot be marked as ready";
+    public static final String ORDER_READY_401_DESCRIPTION = "Authentication credentials are missing or invalid";
+    public static final String ORDER_READY_403_DESCRIPTION = "User does not have permission to mark this order as ready";
+    public static final String ORDER_READY_404_DESCRIPTION = "Order not found or not in the correct state";
+    public static final String ORDER_READY_SUCCESSFULLY = "Order is ready";
+
+    public static final String DELIVER_ORDER_SUMMARY = "Deliver order to customer";
+    public static final String DELIVER_ORDER_DESCRIPTION = "Marks an order as delivered after validating the security PIN provided by the customer";
+    public static final String DELIVER_ORDER_200_DESCRIPTION = "Order successfully delivered";
+    public static final String DELIVER_ORDER_400_DESCRIPTION = "Invalid request or incorrect PIN";
+    public static final String DELIVER_ORDER_401_DESCRIPTION = "Authentication credentials are missing or invalid";
+    public static final String DELIVER_ORDER_404_DESCRIPTION = "Order not found or not in READY state";
+    public static final String ORDER_DELIVERED_SUCCESSFULLY = "Order delivered successfully";
 }

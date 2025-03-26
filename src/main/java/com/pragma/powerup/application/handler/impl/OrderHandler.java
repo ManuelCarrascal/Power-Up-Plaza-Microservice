@@ -1,6 +1,7 @@
 package com.pragma.powerup.application.handler.impl;
 
 import com.pragma.powerup.application.dto.request.AssignEmployeeRequestDto;
+import com.pragma.powerup.application.dto.request.DeliverOrderRequestDto;
 import com.pragma.powerup.application.dto.request.OrderListRequestDto;
 import com.pragma.powerup.application.dto.request.OrderRequestDto;
 import com.pragma.powerup.application.dto.response.OrderListResponseDto;
@@ -47,4 +48,14 @@ public class OrderHandler implements IOrderHandler {
     public void orderReady(AssignEmployeeRequestDto assignEmployeeRequestDto) {
         orderServicePort.orderReady(assignEmployeeRequestDto.getIdOrder(), assignEmployeeRequestDto.getIdRestaurant());
     }
+
+    @Override
+    public void deliverOrder(DeliverOrderRequestDto deliverOrderDto) {
+        orderServicePort.deliverOrder(
+                deliverOrderDto.getIdOrder(),
+                deliverOrderDto.getPhoneNumber(),
+                deliverOrderDto.getPin()
+        );
+    }
+
 }
