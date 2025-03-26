@@ -621,4 +621,120 @@ class OrderUseCaseTest {
         verify(orderPersistencePort, never()).updateOrder(any());
         verify(notificationPersistencePort, never()).saveNotification(any(), any());
     }
+
+    @Test
+    void deliverOrder_Success() {
+        Long orderId = 1L;
+        String phoneNumber = "+573001234567";
+        String pin = "1234";
+
+        order.setId(orderId);
+        order.setStatus(OrderUseCaseConstants.STATUS_READY);
+
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.of(order));
+        doNothing().when(notificationPersistencePort).validatePin(orderId, phoneNumber, pin);
+
+        orderUseCase.deliverOrder(orderId, phoneNumber, pin);
+
+        assertEquals(OrderUseCaseConstants.STATUS_DELIVERED, order.getStatus());
+        verify(orderPersistencePort).updateOrder(order);
+        verify(notificationPersistencePort).validatePin(orderId, phoneNumber, pin);
+    }
+
+    @Test
+    void deliverOrder_OrderNotFound_ThrowsException() {
+        Long orderId = 1L;
+        String phoneNumber = "+573001234567";
+        String pin = "1234";
+
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.empty());
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.deliverOrder(orderId, phoneNumber, pin)
+        );
+        assertEquals(OrderUseCaseConstants.ORDER_NOT_FOUND, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
+        verify(notificationPersistencePort, never()).validatePin(any(), any(), any());
+    }
+
+    @Test
+    void deliverOrder_OrderNotInReadyState_ThrowsException() {
+        Long orderId = 1L;
+        String phoneNumber = "+573001234567";
+        String pin = "1234";
+
+        order.setId(orderId);
+        order.setStatus(OrderUseCaseConstants.STATUS_IN_PREPARATION); // Wrong status
+
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.of(order));
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.deliverOrder(orderId, phoneNumber, pin)
+        );
+        assertEquals(OrderUseCaseConstants.ORDER_NOT_READY, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
+        verify(notificationPersistencePort, never()).validatePin(any(), any(), any());
+    }
+
+    @Test
+    void deliverOrder_NullPin_ThrowsException() {
+        Long orderId = 1L;
+        String phoneNumber = "+573001234567";
+
+        order.setId(orderId);
+        order.setStatus(OrderUseCaseConstants.STATUS_READY);
+
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.of(order));
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.deliverOrder(orderId, phoneNumber, null)
+        );
+        assertEquals(OrderUseCaseConstants.PIN_REQUIRED, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
+        verify(notificationPersistencePort, never()).validatePin(any(), any(), any());
+    }
+
+    @Test
+    void deliverOrder_EmptyPin_ThrowsException() {
+        Long orderId = 1L;
+        String phoneNumber = "+573001234567";
+        String pin = "  ";
+
+        order.setId(orderId);
+        order.setStatus(OrderUseCaseConstants.STATUS_READY);
+
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.of(order));
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.deliverOrder(orderId, phoneNumber, pin)
+        );
+        assertEquals(OrderUseCaseConstants.PIN_REQUIRED, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
+        verify(notificationPersistencePort, never()).validatePin(any(), any(), any());
+    }
+
+    @Test
+    void deliverOrder_InvalidPin_ThrowsException() {
+        Long orderId = 1L;
+        String phoneNumber = "+573001234567";
+        String pin = "1234";
+
+        order.setId(orderId);
+        order.setStatus(OrderUseCaseConstants.STATUS_READY);
+
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.of(order));
+        doThrow(new CustomValidationException(OrderUseCaseConstants.INVALID_PIN))
+                .when(notificationPersistencePort).validatePin(orderId, phoneNumber, pin);
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.deliverOrder(orderId, phoneNumber, pin)
+        );
+        assertEquals(OrderUseCaseConstants.INVALID_PIN, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
+    }
 }

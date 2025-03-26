@@ -95,6 +95,25 @@ public class OrderUseCase implements IOrderServicePort {
         orderPersistencePort.updateOrder(order);
     }
 
+    @Override
+    public void deliverOrder(Long idOrder, String phoneNumber, String pin) {
+        Order order = orderPersistencePort.findById(idOrder)
+                .orElseThrow(() -> new CustomValidationException(OrderUseCaseConstants.ORDER_NOT_FOUND));
+
+        if (!OrderUseCaseConstants.STATUS_READY.equals(order.getStatus())) {
+            throw new CustomValidationException(OrderUseCaseConstants.ORDER_NOT_READY);
+        }
+
+        if (pin == null || pin.trim().isEmpty()) {
+            throw new CustomValidationException(OrderUseCaseConstants.PIN_REQUIRED);
+        }
+
+        notificationPersistencePort.validatePin(idOrder, phoneNumber, pin);
+
+        order.setStatus(OrderUseCaseConstants.STATUS_DELIVERED);
+        orderPersistencePort.updateOrder(order);
+    }
+
     private void validateClientHasNoActiveOrder(Long clientId) {
         if (orderPersistencePort.findOrderByClientId(clientId)) {
             throw new CustomValidationException(OrderUseCaseConstants.CLIENT_HAS_ACTIVE_ORDER);
