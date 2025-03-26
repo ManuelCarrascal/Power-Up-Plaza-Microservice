@@ -737,4 +737,79 @@ class OrderUseCaseTest {
         assertEquals(OrderUseCaseConstants.INVALID_PIN, exception.getMessage());
         verify(orderPersistencePort, never()).updateOrder(any());
     }
+
+    @Test
+    void cancelOrder_Success() {
+        Long orderId = 1L;
+        Long clientId = 10L;
+
+        order.setId(orderId);
+        order.setClientId(clientId);
+        order.setStatus(OrderUseCaseConstants.STATUS_PENDING);
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(clientId);
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.of(order));
+
+        orderUseCase.cancelOrder(orderId);
+
+        assertEquals(OrderUseCaseConstants.STATUS_CANCELED, order.getStatus());
+        verify(orderPersistencePort).updateOrder(order);
+    }
+
+    @Test
+    void cancelOrder_OrderNotFound_ThrowsException() {
+        Long orderId = 1L;
+        Long clientId = 10L;
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(clientId);
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.empty());
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.cancelOrder(orderId)
+        );
+        assertEquals(OrderUseCaseConstants.ORDER_NOT_FOUND, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
+    }
+
+    @Test
+    void cancelOrder_NotOrderOwner_ThrowsException() {
+        Long orderId = 1L;
+        Long clientId = 10L;
+        Long differentClientId = 20L;
+
+        order.setId(orderId);
+        order.setClientId(differentClientId);
+        order.setStatus(OrderUseCaseConstants.STATUS_PENDING);
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(clientId);
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.of(order));
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.cancelOrder(orderId)
+        );
+        assertEquals(OrderUseCaseConstants.CLIENT_NOT_ORDER_OWNER, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
+    }
+
+    @Test
+    void cancelOrder_NotInPendingState_ThrowsException() {
+        Long orderId = 1L;
+        Long clientId = 10L;
+
+        order.setId(orderId);
+        order.setClientId(clientId);
+        order.setStatus(OrderUseCaseConstants.STATUS_IN_PREPARATION);
+
+        when(userPersistencePort.getCurrentUserId()).thenReturn(clientId);
+        when(orderPersistencePort.findById(orderId)).thenReturn(Optional.of(order));
+
+        CustomValidationException exception = assertThrows(
+                CustomValidationException.class,
+                () -> orderUseCase.cancelOrder(orderId)
+        );
+        assertEquals(OrderUseCaseConstants.ORDER_CANNOT_BE_CANCELED, exception.getMessage());
+        verify(orderPersistencePort, never()).updateOrder(any());
+    }
 }

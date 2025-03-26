@@ -13,4 +13,5 @@ public interface IOrderHandler {
     void assignEmployee(AssignEmployeeRequestDto assignEmployeeRequestDto);
     void orderReady(AssignEmployeeRequestDto assignEmployeeRequestDto);
     void deliverOrder(DeliverOrderRequestDto deliverOrderRequestDto);
+    void cancelOrder(Long orderId);
 }

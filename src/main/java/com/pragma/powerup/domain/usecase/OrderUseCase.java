@@ -114,6 +114,25 @@ public class OrderUseCase implements IOrderServicePort {
         orderPersistencePort.updateOrder(order);
     }
 
+    @Override
+    public void cancelOrder(Long orderId) {
+        Long clientId = userPersistencePort.getCurrentUserId();
+
+        Order order = orderPersistencePort.findById(orderId)
+                .orElseThrow(() -> new CustomValidationException(OrderUseCaseConstants.ORDER_NOT_FOUND));
+
+        if (!order.getClientId().equals(clientId)) {
+            throw new CustomValidationException(OrderUseCaseConstants.CLIENT_NOT_ORDER_OWNER);
+        }
+
+        if (!OrderUseCaseConstants.STATUS_PENDING.equals(order.getStatus())) {
+            throw new CustomValidationException(OrderUseCaseConstants.ORDER_CANNOT_BE_CANCELED);
+        }
+
+        order.setStatus(OrderUseCaseConstants.STATUS_CANCELED);
+        orderPersistencePort.updateOrder(order);
+    }
+
     private void validateClientHasNoActiveOrder(Long clientId) {
         if (orderPersistencePort.findOrderByClientId(clientId)) {
             throw new CustomValidationException(OrderUseCaseConstants.CLIENT_HAS_ACTIVE_ORDER);
