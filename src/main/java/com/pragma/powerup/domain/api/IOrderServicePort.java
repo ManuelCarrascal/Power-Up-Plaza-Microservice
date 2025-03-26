@@ -18,4 +18,6 @@ public interface IOrderServicePort {
     void orderReady(Long idOrder, Long idRestaurant);
 
     void deliverOrder(Long idOrder, String phoneNumber, String pin);
+
+    void cancelOrder(Long orderId);
 }

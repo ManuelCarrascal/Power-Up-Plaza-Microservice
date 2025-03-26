@@ -47,4 +47,13 @@ public class OpenApiOrderRestController {
     public static final String DELIVER_ORDER_401_DESCRIPTION = "Authentication credentials are missing or invalid";
     public static final String DELIVER_ORDER_404_DESCRIPTION = "Order not found or not in READY state";
     public static final String ORDER_DELIVERED_SUCCESSFULLY = "Order delivered successfully";
+
+    public static final String CANCEL_ORDER_SUMMARY = "Cancel an order";
+    public static final String CANCEL_ORDER_DESCRIPTION = "Allows a client to cancel an order that is in Pending state";
+    public static final String CANCEL_ORDER_200_DESCRIPTION = "Order successfully canceled";
+    public static final String CANCEL_ORDER_400_DESCRIPTION = "Invalid request or order cannot be canceled";
+    public static final String CANCEL_ORDER_401_DESCRIPTION = "Authentication credentials are missing or invalid";
+    public static final String CANCEL_ORDER_403_DESCRIPTION = "User does not have permission to cancel this order";
+    public static final String CANCEL_ORDER_404_DESCRIPTION = "Order not found";
+    public static final String ORDER_CANCELED_SUCCESSFULLY = "Order has been successfully canceled";
 }
