@@ -7,6 +7,7 @@ import com.pragma.powerup.domain.model.OrderDish;
 import com.pragma.powerup.domain.model.Pagination;
 import com.pragma.powerup.domain.spi.*;
 import com.pragma.powerup.domain.utils.constants.OrderUseCaseConstants;
+import com.pragma.powerup.infrastructure.out.jpa.repository.IOrderRepository;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -92,6 +93,25 @@ public class OrderUseCase implements IOrderServicePort {
         String clientPhoneNumber = userPersistencePort.getPhoneNumberById(order.getClientId());
 
         notificationPersistencePort.saveNotification(idOrder, clientPhoneNumber);
+        orderPersistencePort.updateOrder(order);
+    }
+
+    @Override
+    public void deliverOrder(Long idOrder, String phoneNumber, String pin) {
+        Order order = orderPersistencePort.findById(idOrder)
+                .orElseThrow(() -> new CustomValidationException(OrderUseCaseConstants.ORDER_NOT_FOUND));
+
+        if (!OrderUseCaseConstants.STATUS_READY.equals(order.getStatus())) {
+            throw new CustomValidationException(OrderUseCaseConstants.ORDER_NOT_READY);
+        }
+
+        if (pin == null || pin.trim().isEmpty()) {
+            throw new CustomValidationException(OrderUseCaseConstants.PIN_REQUIRED);
+        }
+
+        notificationPersistencePort.validatePin(idOrder, phoneNumber, pin);
+
+        order.setStatus(OrderUseCaseConstants.STATUS_DELIVERED);
         orderPersistencePort.updateOrder(order);
     }
 

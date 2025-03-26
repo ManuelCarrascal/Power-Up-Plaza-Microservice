@@ -1,6 +1,7 @@
 package com.pragma.powerup.infrastructure.input.rest;
 
 import com.pragma.powerup.application.dto.request.AssignEmployeeRequestDto;
+import com.pragma.powerup.application.dto.request.DeliverOrderRequestDto;
 import com.pragma.powerup.application.dto.request.OrderListRequestDto;
 import com.pragma.powerup.application.dto.request.OrderRequestDto;
 import com.pragma.powerup.application.dto.response.OrderListResponseDto;
@@ -121,5 +122,11 @@ public class OrderRestController {
     public ResponseEntity<String> orderReady(@Valid @RequestBody AssignEmployeeRequestDto assignEmployeeRequestDto) {
         orderHandler.orderReady(assignEmployeeRequestDto);
         return ResponseEntity.ok("Order is ready");
+    }
+
+    @PostMapping("/deliver")
+    public ResponseEntity<Void> deliverOrder(@RequestBody DeliverOrderRequestDto deliverOrderDto) {
+        orderHandler.deliverOrder(deliverOrderDto);
+        return ResponseEntity.ok().build();
     }
 }

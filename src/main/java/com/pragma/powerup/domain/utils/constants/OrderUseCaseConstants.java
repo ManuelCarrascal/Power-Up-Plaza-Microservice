@@ -25,5 +25,10 @@ public class OrderUseCaseConstants {
 
     public static final String STATUS_READY = "READY";
     public static final String ORDER_NOT_IN_PREPARATION = "Order is not in IN_PREPARATION state";
+    public static final String STATUS_DELIVERED = "DELIVERED";
+
+    public static final String ORDER_NOT_READY = "Solo se pueden entregar pedidos en estado listo";
+    public static final String PIN_REQUIRED = "Se requiere un PIN para entregar el pedido";
+    public static final String INVALID_PIN = "El PIN proporcionado no es válido";
 
 }
