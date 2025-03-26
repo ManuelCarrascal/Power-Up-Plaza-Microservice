@@ -99,50 +99,50 @@ public class OrderRestController {
         return ResponseEntity.ok(OpenApiOrderRestController.EMPLOYEE_ASSIGNED_SUCCESSFULLY);
     }
 
-    @Operation(summary = "Mark order as ready for delivery",
-            description = "Updates the order status to READY and sends a notification to the client")
+    @Operation(summary = OpenApiOrderRestController.ORDER_READY_SUMMARY,
+            description = OpenApiOrderRestController.ORDER_READY_DESCRIPTION)
     @ApiResponses(value = {
             @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_OK,
-                    description = "Order status successfully updated to READY"),
+                    description = OpenApiOrderRestController.ORDER_READY_200_DESCRIPTION),
             @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_BAD_REQUEST,
-                    description = "Invalid request - order cannot be marked as ready",
+                    description = OpenApiOrderRestController.ORDER_READY_400_DESCRIPTION,
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_UNAUTHORIZED,
-                    description = "Authentication credentials are missing or invalid",
+                    description = OpenApiOrderRestController.ORDER_READY_401_DESCRIPTION,
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_FORBIDDEN,
-                    description = "User does not have permission to mark this order as ready",
+                    description = OpenApiOrderRestController.ORDER_READY_403_DESCRIPTION,
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_NOT_FOUND,
-                    description = "Order not found or not in the correct state",
+                    description = OpenApiOrderRestController.ORDER_READY_404_DESCRIPTION,
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/ready")
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<String> orderReady(@Valid @RequestBody AssignEmployeeRequestDto assignEmployeeRequestDto) {
         orderHandler.orderReady(assignEmployeeRequestDto);
-        return ResponseEntity.ok("Order is ready");
+        return ResponseEntity.ok(OpenApiOrderRestController.ORDER_READY_SUCCESSFULLY);
     }
 
-    @Operation(summary = "Deliver order to customer",
-            description = "Marks an order as delivered after validating the security PIN provided by the customer")
+    @Operation(summary = OpenApiOrderRestController.DELIVER_ORDER_SUMMARY,
+            description = OpenApiOrderRestController.DELIVER_ORDER_DESCRIPTION)
     @ApiResponses(value = {
             @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_OK,
-                    description = "Order successfully delivered"),
+                    description = OpenApiOrderRestController.DELIVER_ORDER_200_DESCRIPTION),
             @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_BAD_REQUEST,
-                    description = "Invalid request or incorrect PIN",
+                    description = OpenApiOrderRestController.DELIVER_ORDER_400_DESCRIPTION,
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_UNAUTHORIZED,
-                    description = "Authentication credentials are missing or invalid",
+                    description = OpenApiOrderRestController.DELIVER_ORDER_401_DESCRIPTION,
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
             @ApiResponse(responseCode = ResponseCodes.RESPONSE_CODE_NOT_FOUND,
-                    description = "Order not found or not in READY state",
+                    description = OpenApiOrderRestController.DELIVER_ORDER_404_DESCRIPTION,
                     content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
     })
     @PostMapping("/deliver")
     @PreAuthorize("hasRole('ROLE_EMPLOYEE')")
     public ResponseEntity<String> deliverOrder(@Valid @RequestBody DeliverOrderRequestDto deliverOrderDto) {
         orderHandler.deliverOrder(deliverOrderDto);
-        return ResponseEntity.ok("Order delivered successfully");
+        return ResponseEntity.ok(OpenApiOrderRestController.ORDER_DELIVERED_SUCCESSFULLY);
     }
 }
