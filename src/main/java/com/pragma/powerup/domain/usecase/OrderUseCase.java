@@ -18,13 +18,15 @@ public class OrderUseCase implements IOrderServicePort {
     private final IDishPersistencePort dishPersistencePort;
     private final IUserPersistencePort userPersistencePort;
     private final INotificationPersistencePort notificationPersistencePort;
+    private final ITraceabilityPersistencePort traceabilityPersistencePort;
 
-    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, IDishPersistencePort dishPersistencePort, IUserPersistencePort userPersistencePort, INotificationPersistencePort notificationPersistencePort) {
+    public OrderUseCase(IOrderPersistencePort orderPersistencePort, IRestaurantPersistencePort restaurantPersistencePort, IDishPersistencePort dishPersistencePort, IUserPersistencePort userPersistencePort, INotificationPersistencePort notificationPersistencePort, ITraceabilityPersistencePort traceabilityPersistencePort) {
         this.orderPersistencePort = orderPersistencePort;
         this.restaurantPersistencePort = restaurantPersistencePort;
         this.dishPersistencePort = dishPersistencePort;
         this.userPersistencePort = userPersistencePort;
         this.notificationPersistencePort = notificationPersistencePort;
+        this.traceabilityPersistencePort = traceabilityPersistencePort;
     }
 
     @Override
@@ -40,6 +42,7 @@ public class OrderUseCase implements IOrderServicePort {
         order.setDate(LocalDate.now());
 
         orderPersistencePort.createOrder(order);
+        traceabilityPersistencePort.saveOrderTraceability(order, OrderUseCaseConstants.STATUS_PENDING);
     }
 
     @Override
@@ -77,6 +80,7 @@ public class OrderUseCase implements IOrderServicePort {
         order.setStatus(OrderUseCaseConstants.STATUS_IN_PREPARATION);
 
         orderPersistencePort.updateOrder(order);
+        traceabilityPersistencePort.saveOrderTraceability(order, OrderUseCaseConstants.STATUS_IN_PREPARATION);
     }
 
     @Override
@@ -93,6 +97,7 @@ public class OrderUseCase implements IOrderServicePort {
 
         notificationPersistencePort.saveNotification(idOrder, clientPhoneNumber);
         orderPersistencePort.updateOrder(order);
+        traceabilityPersistencePort.saveOrderTraceability(order, OrderUseCaseConstants.STATUS_READY);
     }
 
     @Override
@@ -112,6 +117,7 @@ public class OrderUseCase implements IOrderServicePort {
 
         order.setStatus(OrderUseCaseConstants.STATUS_DELIVERED);
         orderPersistencePort.updateOrder(order);
+        traceabilityPersistencePort.saveOrderTraceability(order, OrderUseCaseConstants.STATUS_DELIVERED);
     }
 
     @Override
@@ -131,6 +137,7 @@ public class OrderUseCase implements IOrderServicePort {
 
         order.setStatus(OrderUseCaseConstants.STATUS_CANCELED);
         orderPersistencePort.updateOrder(order);
+        traceabilityPersistencePort.saveOrderTraceability(order, OrderUseCaseConstants.STATUS_CANCELED);
     }
 
     private void validateClientHasNoActiveOrder(Long clientId) {
